@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+
+    <nl.joery.animatedbottombar.AnimatedBottomBar
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+
+        app:abb_badgeBackgroundColor="#7d878d"
+        app:abb_indicatorAppearance="round"
+        app:abb_indicatorColor="#e1061c"
+
+        app:abb_indicatorHeight="4dp"
+        app:abb_indicatorMargin="14dp"
+        app:abb_selectedIndex="0"
+
+        app:abb_selectedTabType="icon"
+        app:abb_tabAnimation="fade"
+        app:abb_tabColor="#7d878d"
+        app:abb_tabColorSelected="#7d878d"
+        app:abb_tabs="@menu/tabs"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
