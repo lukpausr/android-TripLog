@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:visibility="visible"
 
-        app:abb_badgeBackgroundColor="#7d878d"
+        app:abb_badgeBackgroundColor="@color/dhbw_grey"
         app:abb_indicatorAppearance="round"
-        app:abb_indicatorColor="#e1061c"
+        app:abb_indicatorColor="@color/dhbw_red"
 
         app:abb_indicatorHeight="4dp"
         app:abb_indicatorMargin="14dp"
@@ -24,8 +24,8 @@
 
         app:abb_selectedTabType="icon"
         app:abb_tabAnimation="fade"
-        app:abb_tabColor="#7d878d"
-        app:abb_tabColorSelected="#7d878d"
+        app:abb_tabColor="@color/dhbw_grey"
+        app:abb_tabColorSelected="@color/dhbw_grey"
         app:abb_tabs="@menu/tabs"
         app:layout_constraintBottom_toBottomOf="parent" />
 
