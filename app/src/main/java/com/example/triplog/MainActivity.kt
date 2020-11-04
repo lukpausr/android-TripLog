@@ -9,6 +9,7 @@ import nl.joery.animatedbottombar.AnimatedBottomBar
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    private val BACK_STACK_ROOT_TAG = "HomeFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,7 +18,10 @@ class MainActivity : AppCompatActivity() {
         if (supportActionBar != null)
             supportActionBar?.hide()
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance("null", "null")).commit()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, HomeFragment.newInstance("null", "null"))
+            .addToBackStack(BACK_STACK_ROOT_TAG)
+            .commit()
 
         bottom_bar.onTabSelected = {
             val newFragment: Fragment? = when (it.id) {
@@ -28,7 +32,8 @@ class MainActivity : AppCompatActivity() {
             }
             if (newFragment != null) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, newFragment).commit()
+                    .replace(R.id.fragment_container, newFragment)
+                    .commit()
             }
         }
 
@@ -53,4 +58,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun onBackPressed() {
+        bottom_bar.selectTabById(R.id.home)
+    }
+
 }
