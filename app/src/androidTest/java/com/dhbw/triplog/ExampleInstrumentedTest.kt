@@ -1,4 +1,4 @@
-package com.example.triplog
+package com.dhbw.triplog
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.example.triplog
+package com.dhbw.triplog
 
 import org.junit.Test
 
