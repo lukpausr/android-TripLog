@@ -2,6 +2,9 @@
 
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
 
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
         <item name="colorPrimary">@color/dhbw_red</item>
         <item name="colorSecondary">@color/dhbw_grey</item>
 
