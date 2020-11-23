@@ -9,17 +9,21 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:text="Enable Tracking"
+        android:textStyle="bold"
         android:paddingRight="20dp"
+        android:textSize="15dp"
         android:textColor="@color/dhbw_red"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/swToggleButton"
         app:layout_constraintStart_toStartOf="@id/swToggleButton"/>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/swToggleButton"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
+        android:gravity="center_vertical"
+        app:thumbTint="@color/dhbw_red"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvToggleButton"/>
