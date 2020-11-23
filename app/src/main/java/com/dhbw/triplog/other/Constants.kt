@@ -12,9 +12,10 @@ object Constants {
 
 
 
+    // Permissions
+    const val REQUEST_CODE_LOCATION_PERMISSION = 0
 
-
-
+    // Shared Preferences
     const val SHARED_PREFERENCES_NAME = "sharedPref"
     const val KEY_DSGVO = "KEY_DSGVO"
 

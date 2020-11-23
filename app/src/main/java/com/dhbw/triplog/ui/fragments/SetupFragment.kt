@@ -39,7 +39,7 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
         }
 
         tvDecline.setOnClickListener {
-            Snackbar.make(requireView(), "You cannot use this app without accepting the DSGVO", Snackbar.LENGTH_SHORT)
+            Snackbar.make(requireView(), "You cannot use this app without accepting the DSGVO", Snackbar.LENGTH_LONG)
                     .setAnchorView(tvAccept)
                     .show()
         }
