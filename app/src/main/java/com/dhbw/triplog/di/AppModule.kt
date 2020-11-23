@@ -44,4 +44,6 @@ object AppModule {
             sharedPref.getBoolean(KEY_DSGVO, false)
 
 
+
+
 }
