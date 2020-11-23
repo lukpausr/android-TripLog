@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/infoFragment"
+        android:title="How to..."
+        android:icon="@drawable/ic_baseline_help_center_24" />
+
+    <item
+        android:id="@+id/tripFragment"
+        android:title="Trips"
+        android:icon="@drawable/ic_baseline_map_24" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+
+</menu>

@@ -1,10 +1,13 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Original AppCompat attributes. -->
-        <item name="colorPrimary">@color/md_blue_900</item>
-        <item name="colorSecondary">@color/md_blue_500</item>
-        <item name="android:colorBackground">@color/md_blue_700</item>
+
+        <item name="colorPrimary">@color/dhbw_red</item>
+        <item name="colorSecondary">@color/dhbw_grey</item>
+
+
+
+        <item name="android:colorBackground">@color/white</item>
         <item name="colorError">@color/errorColor</item>
 
         <!-- New MaterialComponents attributes. -->
