@@ -8,4 +8,14 @@ object Constants {
     const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
 
     const val BACK_STACK_ROOT_TAG = "HomeFragment"
+
+
+
+
+
+
+
+    const val SHARED_PREFERENCES_NAME = "sharedPref"
+    const val KEY_DSGVO = "KEY_DSGVO"
+
 }

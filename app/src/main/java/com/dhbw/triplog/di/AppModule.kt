@@ -1,8 +1,12 @@
 package com.dhbw.triplog.di
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.dhbw.triplog.db.TripDatabase
+import com.dhbw.triplog.other.Constants.KEY_DSGVO
+import com.dhbw.triplog.other.Constants.SHARED_PREFERENCES_NAME
 import com.dhbw.triplog.other.Constants.TRIP_DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -28,5 +32,16 @@ object AppModule {
     @Singleton
     @Provides
     fun provideTripDao(db: TripDatabase) = db.getTripDao()
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext app: Context) =
+            app.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
+
+    @Singleton
+    @Provides
+    fun provideDSGVOAccepted(sharedPref: SharedPreferences) =
+            sharedPref.getBoolean(KEY_DSGVO, false)
+
 
 }

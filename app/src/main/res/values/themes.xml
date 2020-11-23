@@ -6,13 +6,15 @@
         <item name="windowNoTitle">true</item>
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/dhbw_grey</item>
-        <item name="colorPrimaryVariant">@color/dhbw_grey</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/black</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/dhbw_red</item>
         <item name="colorSecondaryVariant">@color/dhbw_red</item>
         <item name="colorOnSecondary">@color/black</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

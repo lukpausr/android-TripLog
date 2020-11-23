@@ -3,16 +3,19 @@
 
     <item
         android:id="@+id/infoFragment"
+        android:enabled="true"
         android:title="How to..."
         android:icon="@drawable/ic_baseline_help_center_24" />
 
     <item
         android:id="@+id/tripFragment"
+        android:enabled="true"
         android:title="Trips"
         android:icon="@drawable/ic_baseline_map_24" />
 
     <item
         android:id="@+id/settingsFragment"
+        android:enabled="true"
         android:title="Settings"
         android:icon="@drawable/ic_baseline_settings_24" />
 
