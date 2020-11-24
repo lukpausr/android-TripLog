@@ -2,14 +2,15 @@ package com.dhbw.triplog.ui.fragments
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.CompoundButton
 import androidx.fragment.app.Fragment
 import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
+import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
@@ -17,16 +18,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.PermissionCallbacks {
 
     private var isTracking = false
 
+    @Inject
+    lateinit var sharedPref: SharedPreferences
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissions()
+        getToggleStateFromSharedPref()
 
         swToggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -34,10 +40,25 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             } else {
                 stopTracking()
             }
+            writeToggleStateToSharedPref(isChecked)
         }
 
         subscribeToObservers()
 
+    }
+
+    private fun getToggleStateFromSharedPref() {
+        val state = sharedPref.getBoolean(KEY_TRACKING_STATE, true )
+        swToggleButton.isChecked = state
+        if (state) {
+            startTracking()
+        } else {
+            stopTracking()
+        }
+    }
+
+    private fun writeToggleStateToSharedPref(isChecked : Boolean) {
+        sharedPref.edit().putBoolean(KEY_TRACKING_STATE, isChecked).apply()
     }
 
     private fun subscribeToObservers() {

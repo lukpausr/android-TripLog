@@ -27,5 +27,6 @@ object Constants {
     // Shared Preferences
     const val SHARED_PREFERENCES_NAME = "sharedPref"
     const val KEY_DSGVO = "KEY_DSGVO"
+    const val KEY_TRACKING_STATE = "KEY_TRACKING_STATE"
 
 }
