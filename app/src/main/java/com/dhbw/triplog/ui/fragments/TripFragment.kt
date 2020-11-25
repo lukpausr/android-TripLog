@@ -7,10 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
 import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
+import com.dhbw.triplog.other.Constants.REQUEST_CODE_ACTIVITY_TRANSITION_PERMISSION
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
@@ -31,7 +33,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         requestPermissions()
+
         getToggleStateFromSharedPref()
 
         swToggleButton.setOnCheckedChangeListener { _, isChecked ->
@@ -62,7 +66,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun subscribeToObservers() {
-
+        TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
+            tvTripExplain.text = isTracking.toString()
+        })
+        TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
+            tvTripExplain.text = it
+        })
     }
 
     private fun sendCommandToService(action: String) =
@@ -106,7 +115,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     REQUEST_CODE_LOCATION_PERMISSION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACTIVITY_RECOGNITION
             )
         }
     }

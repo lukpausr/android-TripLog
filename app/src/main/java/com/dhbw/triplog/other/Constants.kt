@@ -21,8 +21,12 @@ object Constants {
     const val LOCATION_UPDATE_INTERVAL = 5000L
     const val FASTEST_LOCATION_INTERVAL = 3000L
 
+    // Activity Recognition
+    const val TRANSITION_RECEIVER_ACTION = "TRANSITION_RECEIVER_ACTION"
+
     // Permissions
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
+    const val REQUEST_CODE_ACTIVITY_TRANSITION_PERMISSION = 1
 
     // Shared Preferences
     const val SHARED_PREFERENCES_NAME = "sharedPref"
