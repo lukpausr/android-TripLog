@@ -133,7 +133,7 @@ class TrackingService : LifecycleService() {
     }
 
     // Anonymous inner class with overridden onLocationResult functionality
-    val locationCallback = object : LocationCallback() {
+    private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             super.onLocationResult(result)
             if(isTracking.value!!) {
@@ -173,7 +173,7 @@ class TrackingService : LifecycleService() {
 
     }
 
-    val activityReceiver = object : BroadcastReceiver() {
+    private val activityReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Timber.d("TRACKING_SERVICE: Entered onReceive")
             if(ActivityTransitionResult.hasResult(intent)) {

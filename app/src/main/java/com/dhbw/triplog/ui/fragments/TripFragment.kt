@@ -33,10 +33,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         requestPermissions()
-
         getToggleStateFromSharedPref()
+
+        subscribeToObservers()
 
         swToggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -46,9 +46,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             }
             writeToggleStateToSharedPref(isChecked)
         }
-
-        subscribeToObservers()
-
     }
 
     private fun getToggleStateFromSharedPref() {
@@ -59,6 +56,23 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         } else {
             stopTracking()
         }
+        updateTVToggleButton()
+    }
+
+    private fun stopTracking() {
+        if(isTracking) sendCommandToService(ACTION_STOP_SERVICE)
+    }
+
+    private fun startTracking() {
+        if(!isTracking) sendCommandToService(ACTION_START_RESUME_SERVICE)
+    }
+
+    private fun updateTVToggleButton() {
+        if(isTracking) {
+            tvToggleButton.text = "Tracking enabled"
+        } else {
+            tvToggleButton.text = "Tracking stopped"
+        }
     }
 
     private fun writeToggleStateToSharedPref(isChecked : Boolean) {
@@ -68,6 +82,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun subscribeToObservers() {
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
             tvTripExplain.text = isTracking.toString()
+            isTracking = it
+            updateTVToggleButton()
         })
         TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
             tvTripExplain.text = it
@@ -80,17 +96,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 requireContext().startService(it)
             }
 
-    private fun stopTracking() {
-        isTracking = false
-        tvToggleButton.text = "Tracking stopped"
-        sendCommandToService(ACTION_STOP_SERVICE)
-    }
 
-    private fun startTracking() {
-        isTracking = true
-        tvToggleButton.text = "Tracking enabled"
-        sendCommandToService(ACTION_START_RESUME_SERVICE)
-    }
 
     private fun setupRecyclerView() = rvTrips.apply {
         TODO("Not yet implemented")

@@ -35,17 +35,6 @@ object ServiceModule {
             @ApplicationContext app: Context
     ) = ActivityRecognitionClient(app)
 
-//    @ServiceScoped
-//    @Provides
-//    fun provideActivityRecognitionPendingIntent(
-//            @ApplicationContext app: Context
-//    ) = PendingIntent.getService(
-//            app,
-//            1,
-//            Intent(app, TrackingService::class.java),
-//            PendingIntent.FLAG_UPDATE_CURRENT
-//    )
-
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(
