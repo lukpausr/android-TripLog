@@ -12,7 +12,6 @@ import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
 import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
-import com.dhbw.triplog.other.Constants.REQUEST_CODE_ACTIVITY_TRANSITION_PERMISSION
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
@@ -46,6 +45,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             }
             writeToggleStateToSharedPref(isChecked)
         }
+
     }
 
     private fun getToggleStateFromSharedPref() {
@@ -81,7 +81,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private fun subscribeToObservers() {
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
-            tvTripExplain.text = isTracking.toString()
+            //tvTripExplain.text = it.toString()
             isTracking = it
             updateTVToggleButton()
         })
@@ -95,8 +95,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 it.action = action
                 requireContext().startService(it)
             }
-
-
 
     private fun setupRecyclerView() = rvTrips.apply {
         TODO("Not yet implemented")

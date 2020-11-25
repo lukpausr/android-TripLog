@@ -47,6 +47,8 @@ class TrackingService : LifecycleService() {
     @Inject
     lateinit var baseNotificationBuilder: NotificationCompat.Builder
 
+    lateinit var curNotificationBuilder: NotificationCompat.Builder
+
     companion object {
         // Mutable LiveData object to enable modification by user
         val isTracking = MutableLiveData<Boolean>()
@@ -69,6 +71,10 @@ class TrackingService : LifecycleService() {
             Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
             registerForActivityUpdates(it)
+        })
+
+        activityUpdates.observe(this, Observer {
+            updateNotificationState(isTracking.value!!)
         })
 
     }
@@ -189,6 +195,16 @@ class TrackingService : LifecycleService() {
                 activityUpdates.postValue(result.mostProbableActivity.toString())
                 Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity.toString()}")
             }
+        }
+    }
+
+    private fun updateNotificationState(isTracking: Boolean) {
+        val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (isTracking) {
+            curNotificationBuilder = baseNotificationBuilder
+                    .setContentText(activityUpdates.value?.toString())
+            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
         }
     }
 

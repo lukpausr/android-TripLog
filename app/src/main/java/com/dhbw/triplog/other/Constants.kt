@@ -26,7 +26,6 @@ object Constants {
 
     // Permissions
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
-    const val REQUEST_CODE_ACTIVITY_TRANSITION_PERMISSION = 1
 
     // Shared Preferences
     const val SHARED_PREFERENCES_NAME = "sharedPref"
