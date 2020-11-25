@@ -12,10 +12,8 @@ import android.content.IntentFilter
 import android.location.Location
 import android.os.Build
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -34,7 +32,6 @@ import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class TrackingService : LifecycleService() {
@@ -47,12 +44,8 @@ class TrackingService : LifecycleService() {
 
     lateinit var activityRecognitionPendingIntent : PendingIntent
 
-    //var activityReceiver = ActivityReceiver()
-
     @Inject
     lateinit var baseNotificationBuilder: NotificationCompat.Builder
-
-    private val transitions = mutableListOf<ActivityTransition>()
 
     companion object {
         // Mutable LiveData object to enable modification by user
@@ -157,23 +150,20 @@ class TrackingService : LifecycleService() {
     private fun registerForActivityUpdates(isTracking: Boolean) {
         if(isTracking) {
             Timber.d("TRACKING_SERVICE: Register for Activity Updates")
-            addObservedTransitionTypes()
+            val transitions = TrackingUtility.getTransitionsToObserve()
             val request = ActivityTransitionRequest(transitions)
 
 //            activityRecognitionClient.requestActivityTransitionUpdates(
 //                    request,
 //                    activityRecognitionPendingIntent
 //            )
-//                    .addOnSuccessListener {
-//                        Timber.d("Activity Recognition successfully set up")
-//                    }
+//                    .addOnSuccessListener { Timber.d("TRACKING_SERVICE: Activity Recognition successfully set up") }
 
             activityRecognitionClient.requestActivityUpdates(
                     0,
                     activityRecognitionPendingIntent
             )
-                    .addOnSuccessListener { Timber.d("TRACKING_SERVICE: Activity Update Request Successfull") }
-
+                    .addOnSuccessListener { Timber.d("TRACKING_SERVICE: Activity Update Request successfully set up") }
 
         } else {
             Timber.d("TRACKING_SERVICE: Deregister from Activity Updates")
@@ -191,8 +181,8 @@ class TrackingService : LifecycleService() {
 //                for (event in result.transitionEvents) {
 //                    Timber.d("TRACKING_SERVICE: Event received")
 //                }
-                activityUpdates.postValue(TrackingUtility.decryptActivity(result))
-                Timber.d("TRACKING_SERVICE: ${TrackingUtility.decryptActivity(result)}")
+                activityUpdates.postValue(TrackingUtility.getActivityAsString(result))
+                Timber.d("TRACKING_SERVICE: ${TrackingUtility.getActivityAsString(result)}")
             }
             if(ActivityRecognitionResult.hasResult(intent)) {
                 val result = ActivityRecognitionResult.extractResult(intent)!!
@@ -200,30 +190,6 @@ class TrackingService : LifecycleService() {
                 Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity.toString()}")
             }
         }
-    }
-
-    private fun addObservedTransitionTypes() {
-        transitions.clear()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.STILL)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.ON_FOOT)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.ON_BICYCLE)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.IN_VEHICLE)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
     }
 
     private fun startForegroundService() {

@@ -3,7 +3,9 @@ package com.dhbw.triplog.other
 import android.Manifest
 import android.content.Context
 import android.os.Build
+import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionResult
+import com.google.android.gms.location.DetectedActivity
 import pub.devrel.easypermissions.EasyPermissions
 
 object TrackingUtility {
@@ -25,7 +27,7 @@ object TrackingUtility {
                 )
             }
 
-    fun decryptActivity(result : ActivityTransitionResult) : String {
+    fun getActivityAsString(result : ActivityTransitionResult) : String {
         var activity = ""
         when (result.transitionEvents.last().activityType) {
             0 -> activity = "IN_VEHICLE"
@@ -38,6 +40,31 @@ object TrackingUtility {
             8 -> activity = "RUNNING"
         }
         return activity
+    }
+
+    fun getTransitionsToObserve() : List<ActivityTransition> {
+        val transitions = mutableListOf<ActivityTransition>()
+        transitions +=
+                ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.STILL)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build()
+        transitions +=
+                ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.ON_FOOT)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build()
+        transitions +=
+                ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.ON_BICYCLE)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build()
+        transitions +=
+                ActivityTransition.Builder()
+                        .setActivityType(DetectedActivity.IN_VEHICLE)
+                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                        .build()
+        return transitions.toList()
     }
 
 }
