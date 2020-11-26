@@ -31,10 +31,7 @@ import com.dhbw.triplog.other.TrackingUtility
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -215,8 +212,6 @@ class TrackingService : LifecycleService() {
         if(lastActivity != curActivity) {
             isTimerEnabled = false
             lastActivity = curActivity
-            tripTimeInSeconds.postValue(0L)
-            tripTimeInMillis.postValue(0L)
             startTimer()
         }
     }
@@ -228,7 +223,14 @@ class TrackingService : LifecycleService() {
 
     private fun startTimer() {
         isTimerEnabled = true
+
+        lastSecondTimestamp = 0L
+        tripTime = 0L
+        tripTimeInSeconds.postValue(0L)
+        tripTimeInMillis.postValue(0L)
+
         isTracking.postValue(true)
+
         timeStarted = System.currentTimeMillis()
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -241,6 +243,7 @@ class TrackingService : LifecycleService() {
                 }
                 delay(TIMER_UPDATE_INTERVAL)
             }
+            cancel()
         }
     }
 
