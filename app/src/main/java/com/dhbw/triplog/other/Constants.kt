@@ -24,6 +24,9 @@ object Constants {
     // Activity Recognition
     const val TRANSITION_RECEIVER_ACTION = "TRANSITION_RECEIVER_ACTION"
 
+    // Timer COROUTINE
+    const val TIMER_UPDATE_INTERVAL = 50L
+
     // Permissions
     const val REQUEST_CODE_LOCATION_PERMISSION = 0
 

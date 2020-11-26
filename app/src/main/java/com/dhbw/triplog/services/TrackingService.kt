@@ -25,11 +25,16 @@ import com.dhbw.triplog.other.Constants.LOCATION_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
+import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TRANSITION_RECEIVER_ACTION
 import com.dhbw.triplog.other.TrackingUtility
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -49,14 +54,21 @@ class TrackingService : LifecycleService() {
 
     lateinit var curNotificationBuilder: NotificationCompat.Builder
 
+    private val tripTimeInSeconds = MutableLiveData<Long>()
+
+    private var lastActivity = ""
+
     companion object {
         // Mutable LiveData object to enable modification by user
+        val tripTimeInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val activityUpdates = MutableLiveData<String>()
     }
 
     override fun onCreate() {
         super.onCreate()
+        curNotificationBuilder = baseNotificationBuilder
+
         Timber.d("TRACKING_SERVICE: Entering TrackingService OnCreate")
 
         registerReceiver(activityReceiver, IntentFilter(TRANSITION_RECEIVER_ACTION))
@@ -74,7 +86,8 @@ class TrackingService : LifecycleService() {
         })
 
         activityUpdates.observe(this, Observer {
-            updateNotificationState(isTracking.value!!)
+            //updateNotificationState(isTracking.value!!)
+            activityChanged(it)
         })
 
     }
@@ -198,6 +211,39 @@ class TrackingService : LifecycleService() {
         }
     }
 
+    private fun activityChanged(curActivity: String) {
+        if(lastActivity != curActivity) {
+            isTimerEnabled = false
+            lastActivity = curActivity
+            tripTimeInSeconds.postValue(0L)
+            tripTimeInMillis.postValue(0L)
+            startTimer()
+        }
+    }
+
+    private var timeStarted = 0L
+    private var tripTime = 0L
+    private var lastSecondTimestamp = 0L
+    private var isTimerEnabled = false
+
+    private fun startTimer() {
+        isTimerEnabled = true
+        isTracking.postValue(true)
+        timeStarted = System.currentTimeMillis()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            while(isTimerEnabled) {
+                tripTime = System.currentTimeMillis() - timeStarted
+                tripTimeInMillis.postValue(tripTime)
+                if(tripTimeInMillis.value!! >= lastSecondTimestamp + 1000L) {
+                    tripTimeInSeconds.postValue(tripTimeInSeconds.value!! + 1)
+                    lastSecondTimestamp += 1000L
+                }
+                delay(TIMER_UPDATE_INTERVAL)
+            }
+        }
+    }
+
     private fun updateNotificationState(isTracking: Boolean) {
         val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -219,6 +265,15 @@ class TrackingService : LifecycleService() {
         }
         // Start Foreground Service
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
+
+        tripTimeInSeconds.observe(this, Observer {
+            if(isTracking.value!!) {
+                val notification = curNotificationBuilder
+                        .setStyle(NotificationCompat.BigTextStyle().bigText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}"))
+                        .setContentText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
+                notificationManager.notify(NOTIFICATION_ID, notification.build())
+            }
+        })
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
