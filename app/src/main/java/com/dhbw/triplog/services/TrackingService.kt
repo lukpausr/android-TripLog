@@ -119,6 +119,7 @@ class TrackingService : LifecycleService() {
 
     private fun pauseService() {
         isTracking.postValue(false)
+        isTimerEnabled = false
     }
 
     private fun addTrackPoint(location: Location?) {
