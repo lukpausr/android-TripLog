@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
+
         bottomNavView.setupWithNavController(navHostFragment.findNavController())
         bottomNavView.setOnSystemUiVisibilityChangeListener {  }
 
