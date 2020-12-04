@@ -44,6 +44,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 writeToggleStateToSharedPref(true)
                 refreshButtonColor()
             }
+
         }
 
         btnStopRecord.setOnClickListener {
