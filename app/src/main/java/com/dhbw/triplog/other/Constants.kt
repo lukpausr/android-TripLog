@@ -1,5 +1,7 @@
 package com.dhbw.triplog.other
 
+import android.graphics.Color
+
 object Constants {
     const val TRIP_DATABASE_NAME = "trip_db"
 
@@ -23,6 +25,11 @@ object Constants {
 
     // Activity Recognition
     const val TRANSITION_RECEIVER_ACTION = "TRANSITION_RECEIVER_ACTION"
+
+    // Map
+    const val MAP_ZOOM = 15f
+    const val POLYLINE_COLOR = Color.RED
+    const val POLYLINE_WIDTH = 8f
 
     // Timer COROUTINE
     const val TIMER_UPDATE_INTERVAL = 50L
