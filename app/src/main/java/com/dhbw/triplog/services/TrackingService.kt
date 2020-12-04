@@ -52,6 +52,7 @@ class TrackingService : LifecycleService() {
     lateinit var curNotificationBuilder: NotificationCompat.Builder
 
     private val tripTimeInSeconds = MutableLiveData<Long>()
+    private val gpsPoints = mutableListOf<Location>()
 
     private var lastActivity = ""
 
@@ -123,7 +124,13 @@ class TrackingService : LifecycleService() {
     }
 
     private fun addTrackPoint(location: Location?) {
+        if (location != null) {
+            gpsPoints.add(location)
+        }
+    }
 
+    private fun saveTrackPoints() {
+        gpsPoints.clear()
     }
 
     // Suppress possible because permissions are already checked and handled by EasyPermissions

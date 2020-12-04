@@ -5,41 +5,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/tvToggleButton"
+        android:id="@+id/tvTrackingState"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:text="TRACKING STATE SWITCH"
+        android:text="TRACKING STATE"
         android:textStyle="bold"
-        android:paddingRight="10dp"
+        android:paddingRight="20dp"
         android:textSize="15dp"
         android:textColor="@color/dhbw_red"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/swToggleButton"
-        app:layout_constraintStart_toStartOf="@id/swToggleButton"/>
+        app:layout_constraintRight_toRightOf="parent"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/swToggleButton"
-        android:checked="true"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:paddingRight="10dp"
-        android:gravity="center_vertical"
-        app:thumbTint="@color/dhbw_red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvToggleButton"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTrips"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/dhbw_grey"
-        app:layout_constraintBottom_toTopOf="@id/tvTripExplain"
+        android:layout_margin="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swToggleButton"/>
+        app:layout_constraintBottom_toTopOf="@id/btnStartRecord"
+        app:layout_constraintTop_toBottomOf="@id/tvTrackingState" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Recording"
+        android:backgroundTint="@color/dhbw_red"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
+        app:layout_constraintBottom_toTopOf="@id/tvTripExplain"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btnStopRecord" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStopRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Recording"
+        android:backgroundTint="@color/dhbw_grey"
+        app:layout_constraintTop_toTopOf="@id/btnStartRecord"
+        app:layout_constraintBottom_toTopOf="@id/tvTripExplain"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/btnStartRecord"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvTripExplain"
@@ -51,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rvTrips"
+        app:layout_constraintTop_toBottomOf="@id/btnStartRecord"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"/>

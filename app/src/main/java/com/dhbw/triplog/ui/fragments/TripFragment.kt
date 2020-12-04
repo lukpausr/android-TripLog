@@ -37,26 +37,71 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
         subscribeToObservers()
 
-        swToggleButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
+        btnStartRecord.setOnClickListener {
+            if(!isTracking) {
+                isTracking = true
                 startTracking()
-            } else {
-                stopTracking()
+                writeToggleStateToSharedPref(true)
+                refreshButtonColor()
             }
-            writeToggleStateToSharedPref(isChecked)
+        }
+
+        btnStopRecord.setOnClickListener {
+            if(isTracking) {
+                isTracking = false
+                stopTracking()
+                writeToggleStateToSharedPref(false)
+                refreshButtonColor()
+            }
         }
 
     }
 
+    private fun refreshButtonColor() {
+        if(isTracking) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity?.resources?.let { it ->
+                    btnStartRecord.setBackgroundColor(
+                        it.getColor(
+                            R.color.dhbw_grey,
+                            requireActivity().theme
+                        )
+                    )
+                }
+                activity?.resources?.let { it ->
+                    btnStopRecord.setBackgroundColor(
+                        it.getColor(
+                            R.color.dhbw_red,
+                            requireActivity().theme
+                        )
+                    )
+                }
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                activity?.resources?.let { it ->
+                    btnStartRecord.setBackgroundColor(
+                        it.getColor(
+                            R.color.dhbw_red,
+                            requireActivity().theme
+                        )
+                    )
+                }
+                activity?.resources?.let { it ->
+                    btnStopRecord.setBackgroundColor(
+                        it.getColor(
+                            R.color.dhbw_grey,
+                            requireActivity().theme
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private fun getToggleStateFromSharedPref() {
         val state = sharedPref.getBoolean(KEY_TRACKING_STATE, true )
-        swToggleButton.isChecked = state
-        if (state) {
-            startTracking()
-        } else {
-            stopTracking()
-        }
-        updateTVToggleButton()
+        refreshButtonColor()
     }
 
     private fun stopTracking() {
@@ -67,14 +112,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         if(!isTracking) sendCommandToService(ACTION_START_RESUME_SERVICE)
     }
 
-    private fun updateTVToggleButton() {
-        if(isTracking) {
-            tvToggleButton.text = "Tracking enabled"
-        } else {
-            tvToggleButton.text = "Tracking stopped"
-        }
-    }
-
     private fun writeToggleStateToSharedPref(isChecked : Boolean) {
         sharedPref.edit().putBoolean(KEY_TRACKING_STATE, isChecked).apply()
     }
@@ -83,7 +120,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
             //tvTripExplain.text = it.toString()
             isTracking = it
-            updateTVToggleButton()
         })
         TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
             tvTripExplain.text = it
@@ -95,10 +131,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 it.action = action
                 requireContext().startService(it)
             }
-
-    private fun setupRecyclerView() = rvTrips.apply {
-        TODO("Not yet implemented")
-    }
 
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
