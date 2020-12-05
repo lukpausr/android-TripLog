@@ -3,15 +3,22 @@ package com.dhbw.triplog.ui.fragments
 import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Camera
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.dhbw.triplog.R
+import com.dhbw.triplog.adapters.AlertFilterAdapter
+import com.dhbw.triplog.adapters.RecyclerviewCallbacks
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
 import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
@@ -19,13 +26,16 @@ import com.dhbw.triplog.other.Constants.MAP_ZOOM
 import com.dhbw.triplog.other.Constants.POLYLINE_COLOR
 import com.dhbw.triplog.other.Constants.POLYLINE_WIDTH
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import com.dhbw.triplog.other.FilterItem
 import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -44,6 +54,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private var map: GoogleMap? = null
 
+    private var filterPopup:PopupWindow? = null
+    private var selectedItem: Int = -1
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,6 +66,20 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         getToggleStateFromSharedPref()
 
         subscribeToObservers()
+
+        btnVehicleSelection.setOnClickListener {
+            dismissPopup()
+            filterPopup = showAlertFilter()
+            filterPopup?.isOutsideTouchable = true
+            filterPopup?.isFocusable = true
+            filterPopup?.showAsDropDown(
+                tvTrackingState,
+                0,
+                0,
+                Gravity.LEFT
+            )
+        }
+
 
         btnStartRecord.setOnClickListener {
             if(!isTracking) {
@@ -132,7 +159,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun getToggleStateFromSharedPref() {
-        val state = sharedPref.getBoolean(KEY_TRACKING_STATE, true )
+        val state = sharedPref.getBoolean(KEY_TRACKING_STATE, true)
         refreshButtonColor()
         refreshTvTrackingState()
     }
@@ -148,14 +175,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         sendCommandToService(ACTION_START_RESUME_SERVICE)
     }
 
-    private fun writeToggleStateToSharedPref(isChecked : Boolean) {
+    private fun writeToggleStateToSharedPref(isChecked: Boolean) {
         sharedPref.edit().putBoolean(KEY_TRACKING_STATE, isChecked).apply()
     }
 
     private fun subscribeToObservers() {
         TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
             gpsPoints.add(it)
-            gpsPointsLatLng.add(LocationToLatLng(it))
+            gpsPointsLatLng.add(locationToLatLng(it))
             addLatestPolyline()
             moveCameraToUser()
         })
@@ -170,7 +197,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         if(gpsPoints.isNotEmpty()) {
             map?.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
-                    LocationToLatLng(gpsPoints.last()),
+                    locationToLatLng(gpsPoints.last()),
                     MAP_ZOOM
                 )
             )
@@ -180,7 +207,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun zoomToWholeTrack() {
         val bounds = LatLngBounds.Builder()
         for(point in gpsPoints) {
-            bounds.include(LocationToLatLng(point))
+            bounds.include(locationToLatLng(point))
         }
         map?.moveCamera(
             CameraUpdateFactory.newLatLngBounds(
@@ -192,7 +219,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         )
     }
 
-    private fun LocationToLatLng(location: Location) : LatLng {
+    private fun locationToLatLng(location: Location) : LatLng {
         return LatLng(location.latitude, location.longitude)
     }
 
@@ -213,8 +240,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             val polylineOptions = PolylineOptions()
                 .color(POLYLINE_COLOR)
                 .width(POLYLINE_WIDTH)
-                .add(LocationToLatLng(previousLocation))
-                .add(LocationToLatLng(currentLocation))
+                .add(locationToLatLng(previousLocation))
+                .add(locationToLatLng(currentLocation))
             map?.addPolyline(polylineOptions)
         }
     }
@@ -232,21 +259,21 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             EasyPermissions.requestPermissions(
-                    this,
-                    "You need to accept location permissions to use this app.",
-                    REQUEST_CODE_LOCATION_PERMISSION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                this,
+                "You need to accept location permissions to use this app.",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
             )
         } else {
             EasyPermissions.requestPermissions(
-                    this,
-                    "You need to accept location permissions to use this app.",
-                    REQUEST_CODE_LOCATION_PERMISSION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                    Manifest.permission.ACTIVITY_RECOGNITION
+                this,
+                "You need to accept location permissions to use this app.",
+                REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                Manifest.permission.ACTIVITY_RECOGNITION
             )
         }
     }
@@ -261,7 +288,11 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {    }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
@@ -299,6 +330,63 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
+    }
+
+    private fun showAlertFilter(): PopupWindow {
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(
+            R.layout.vehicle_selector,
+            rootView,
+            false
+        )
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                recyclerView.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+        val adapter = AlertFilterAdapter(requireContext())
+        adapter.addAlertFilter(getFilterItems())
+
+        recyclerView.adapter = adapter
+        adapter.selectedItem(selectedItem)
+
+        adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
+            override fun onItemClick(view: View, position: Int, item: FilterItem) {
+                selectedItem = position
+                Toast.makeText(requireContext(), "data = $item", Toast.LENGTH_SHORT).show()
+                dismissPopup()
+            }
+        })
+
+        return PopupWindow(
+            view,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+    }
+
+    private fun getFilterItems() : List<FilterItem> {
+
+        val filterItemList = mutableListOf<FilterItem>()
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Auto - Konventionell"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Auto - Elektro"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Fuß"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "U-Bahn"))
+
+        return filterItemList
+    }
+
+    private fun dismissPopup() {
+        filterPopup?.let {
+            if(it.isShowing){
+                it.dismiss()
+            }
+            filterPopup = null
+        }
+
     }
 
 
