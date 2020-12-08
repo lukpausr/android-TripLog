@@ -37,8 +37,8 @@ object TrackingUtility {
             3 -> activity = "STILL"
             4 -> activity = "UNKNOWN"
             5 -> activity = "TILTING"
-            7 -> activity = "WALKING"
-            8 -> activity = "RUNNING"
+            7 -> activity = "WALK"
+            8 -> activity = "RUN"
         }
         return activity
     }

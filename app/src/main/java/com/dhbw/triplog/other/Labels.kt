@@ -1,8 +1,8 @@
 package com.dhbw.triplog.other
 
 enum class Labels (val label: String, val subLabel: String, val subSubLabel : String){
-    WALKING ("Foot", "Walking", ""),
-    RUNNING ("Foot", "Running", ""),
+    WALK ("Foot", "Walking", ""),
+    RUN ("Foot", "Running", ""),
     BIKE ("Bike", "Conventional", ""),
     E_BIKE("Bike", "Electric", ""),
     E_SCOOTER("Scooter", "Electric", ""),

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,9 @@ import com.dhbw.triplog.other.Constants.MAP_ZOOM
 import com.dhbw.triplog.other.Constants.POLYLINE_COLOR
 import com.dhbw.triplog.other.Constants.POLYLINE_WIDTH
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import com.dhbw.triplog.other.DataExportUtility
 import com.dhbw.triplog.other.FilterItem
+import com.dhbw.triplog.other.Labels
 import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -54,8 +57,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private var map: GoogleMap? = null
 
-    private var filterPopup:PopupWindow? = null
+    private var filterPopup: PopupWindow? = null
     private var selectedItem: Int = -1
+    private var selectedTransportType: Labels? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,12 +86,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
 
         btnStartRecord.setOnClickListener {
-            if(!isTracking) {
+            if(!isTracking && selectedItem != -1 && selectedTransportType != null) {
                 isTracking = true
                 startTracking()
                 writeToggleStateToSharedPref(true)
                 refreshButtonColor()
                 refreshTvTrackingState()
+            } else if (selectedItem == -1 || selectedTransportType == null) {
+                TODO("Implement Window: Select Vehicle Type first!")
             }
         }
 
@@ -172,6 +178,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         map?.clear()
 
         selectedItem = -1
+        selectedTransportType = null
     }
 
     private fun startTracking() {
@@ -197,7 +204,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun saveGPSDataAsFile () {
-
+        DataExportUtility.writeGPSDataToFile()
     }
 
 
@@ -365,7 +372,21 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
             override fun onItemClick(view: View, position: Int, item: FilterItem) {
                 selectedItem = position
-                Toast.makeText(requireContext(), "data = $item", Toast.LENGTH_SHORT).show()
+                Log.d("Label", "data = ${item.name.toString()}")
+                when(item.name.toString()) {
+                    "Fuß (gehen)" -> selectedTransportType = Labels.WALK
+                    "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
+                    "Fahrrad" -> selectedTransportType = Labels.BIKE
+                    "E-Bike" -> selectedTransportType = Labels.E_BIKE
+                    "E-Roller" -> selectedTransportType = Labels.E_SCOOTER
+                    "Auto (Konventionell)" -> selectedTransportType = Labels.CAR
+                    "Auto (Elektrisch)" -> selectedTransportType = Labels.ELECTRIC_CAR
+                    "Auto (Hybrid)" -> selectedTransportType = Labels.HYBRID_CAR
+                    "Bus" -> selectedTransportType = Labels.BUS
+                    "Bahn" -> selectedTransportType = Labels.TRAIN
+                    "S-Bahn" -> selectedTransportType = Labels.S_TRAIN
+                    "U-Bahn" -> selectedTransportType = Labels.SUBWAY
+                }
                 dismissPopup()
             }
         })

@@ -115,4 +115,7 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
 
+    // CSV Editor
+    implementation 'com.github.doyaaaaaken:kotlin-csv-jvm:0.13.0'
+
 }
