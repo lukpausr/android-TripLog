@@ -15,13 +15,13 @@ import com.dhbw.triplog.other.FilterItem
 
 class AlertFilterAdapter(val context: Context) : RecyclerView.Adapter<AlertFilterAdapter.MyViewHolder>() {
 
-    var filerList : List<FilterItem> = mutableListOf()
+    var filterList : List<FilterItem> = mutableListOf()
 
     private var selectedItem: Int = -1
     var callback: RecyclerviewCallbacks<FilterItem>? = null
 
     fun addAlertFilter(filers: List<FilterItem>) {
-        filerList = filers.toMutableList()
+        filterList = filers.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -31,7 +31,7 @@ class AlertFilterAdapter(val context: Context) : RecyclerView.Adapter<AlertFilte
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, p1: Int) {
-        val item = filerList[p1]
+        val item = filterList[p1]
         holder.tvName.text = item.name
         holder.alert_filter_icon.background = ContextCompat.getDrawable(context, item.icon)
 
@@ -56,7 +56,7 @@ class AlertFilterAdapter(val context: Context) : RecyclerView.Adapter<AlertFilte
     }
 
     override fun getItemCount(): Int {
-        return filerList.size
+        return filterList.size
     }
 
     inner class MyViewHolder(item: View) : RecyclerView.ViewHolder(item) {
@@ -71,7 +71,7 @@ class AlertFilterAdapter(val context: Context) : RecyclerView.Adapter<AlertFilte
 
         private fun setClickListener(view: View) {
             view.setOnClickListener {
-                callback?.onItemClick(it, adapterPosition, filerList[adapterPosition])
+                callback?.onItemClick(it, adapterPosition, filterList[adapterPosition])
             }
         }
     }

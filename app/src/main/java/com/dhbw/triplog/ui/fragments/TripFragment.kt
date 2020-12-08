@@ -73,10 +73,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             filterPopup?.isOutsideTouchable = true
             filterPopup?.isFocusable = true
             filterPopup?.showAsDropDown(
-                tvTrackingState,
+                btnVehicleSelection,
                 0,
                 0,
-                Gravity.LEFT
+                Gravity.BOTTOM
             )
         }
 
@@ -166,9 +166,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private fun stopTracking() {
         sendCommandToService(ACTION_STOP_SERVICE)
+
         gpsPointsLatLng.clear()
         gpsPoints.clear()
         map?.clear()
+
+        selectedItem = -1
     }
 
     private fun startTracking() {
@@ -192,6 +195,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
         })
     }
+
+    private fun saveGPSDataAsFile () {
+
+    }
+
+
 
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {
@@ -346,6 +355,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 DividerItemDecoration.VERTICAL
             )
         )
+
         val adapter = AlertFilterAdapter(requireContext())
         adapter.addAlertFilter(getFilterItems())
 
@@ -371,10 +381,18 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun getFilterItems() : List<FilterItem> {
 
         val filterItemList = mutableListOf<FilterItem>()
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Auto - Konventionell"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Auto - Elektro"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "Fuß"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_add_24, "U-Bahn"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "Bahn"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
 
         return filterItemList
     }

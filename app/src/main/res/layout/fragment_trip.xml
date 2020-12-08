@@ -2,7 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="5dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVehicleSelection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Transport Type"
+        android:backgroundTint="@color/dhbw_grey"
+        app:layout_constraintLeft_toLeftOf="@id/btnStartRecord"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mapView" />
 
     <TextView
         android:id="@+id/tvTrackingState"
@@ -14,7 +25,8 @@
         android:textSize="15dp"
         android:textColor="@color/dhbw_red"
         android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnVehicleSelection"
+        app:layout_constraintBottom_toBottomOf="@id/btnVehicleSelection"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <com.google.android.gms.maps.MapView
@@ -24,12 +36,12 @@
         android:layout_marginTop="0dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btnStartRecord"
-        app:layout_constraintTop_toBottomOf="@id/tvTrackingState" />
+        app:layout_constraintTop_toBottomOf="@id/btnVehicleSelection" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnStartRecord"
@@ -38,7 +50,7 @@
         android:text="Start Recording"
         android:backgroundTint="@color/dhbw_red"
         app:layout_constraintTop_toBottomOf="@id/mapView"
-        app:layout_constraintBottom_toTopOf="@id/btnVehicleSelection"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/btnStopRecord" />
 
@@ -49,20 +61,9 @@
         android:text="Stop Recording"
         android:backgroundTint="@color/dhbw_grey"
         app:layout_constraintTop_toTopOf="@id/btnStartRecord"
-        app:layout_constraintBottom_toTopOf="@id/btnVehicleSelection"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/btnStartRecord"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnVehicleSelection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Transport Type"
-        android:backgroundTint="@color/dhbw_grey"
-        app:layout_constraintStart_toStartOf="@id/btnStartRecord"
-        app:layout_constraintEnd_toEndOf="@id/btnStopRecord"
-        app:layout_constraintTop_toBottomOf="@id/btnStartRecord"
-        app:layout_constraintBottom_toBottomOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
