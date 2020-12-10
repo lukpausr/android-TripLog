@@ -1,6 +1,7 @@
 package com.dhbw.triplog.other
 
 import android.location.Location
+import android.net.Uri
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import java.io.File
@@ -36,6 +37,12 @@ object DataExportUtility {
         }
 
     }
+
+    fun uploadFileToFirebase(path: String) {
+        var file = Uri.fromFile(File(path))
+    }
+
+
 
     private fun labelsToString(selectedTransportType: Labels?) : String {
         val stringBuilder = StringBuilder()
