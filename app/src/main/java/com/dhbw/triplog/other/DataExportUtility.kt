@@ -22,7 +22,7 @@ object DataExportUtility {
         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z")
 
         csvWriter().open("$filename.csv") {
-            writeRow("Time", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed")
+            writeRow("Timestamp", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed")
             for (gpsPoint in gpsPoints) {
                 writeRow(
                         simpleDateFormat.format(gpsPoint.time),
