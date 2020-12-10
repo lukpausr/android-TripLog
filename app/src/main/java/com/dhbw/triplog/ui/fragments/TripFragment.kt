@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -173,6 +172,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun stopTracking() {
         sendCommandToService(ACTION_STOP_SERVICE)
 
+        saveGPSDataAsFile()
+
         gpsPointsLatLng.clear()
         gpsPoints.clear()
         map?.clear()
@@ -204,7 +205,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun saveGPSDataAsFile () {
-        DataExportUtility.writeGPSDataToFile()
+        val path = context?.filesDir
+        if (path != null) {
+            DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
+        }
     }
 
 
