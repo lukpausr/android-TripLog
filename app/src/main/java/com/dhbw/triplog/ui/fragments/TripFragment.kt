@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -101,7 +102,11 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 refreshButtonColor()
                 refreshTvTrackingState()
             } else if (selectedItem == -1 || selectedTransportType == null) {
-                TODO("Implement Window: Select Vehicle Type first!")
+                Toast.makeText(
+                    context,
+                    "Please select the transportation type first!",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
