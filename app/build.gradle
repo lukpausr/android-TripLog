@@ -4,13 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "dagger.hilt.android.plugin"
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.example.triplog"
+        applicationId "com.dhbw.triplog"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
@@ -47,6 +48,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:26.1.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-storage-ktx'
 
     // Room
     implementation "androidx.room:room-runtime:2.2.5"

@@ -4,21 +4,27 @@ import android.location.Location
 import android.net.Uri
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.ktx.storageMetadata
+import timber.log.Timber
 import java.io.File
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
 object DataExportUtility {
 
-    fun writeGPSDataToFile(file: File, gpsPoints: MutableList<Location>, selectedTransportType: Labels?) {
+    fun writeGPSDataToFile(file: File, gpsPoints: MutableList<Location>, selectedTransportType: Labels?) : String {
 
         val labels = labelsToString(selectedTransportType)
 
-        val filename =  file.absolutePath +
-                        "/" +
-                        System.currentTimeMillis().toString() + labels
+        val filename = file.absolutePath +
+                "/" +
+                System.currentTimeMillis().toString() + labels
 
-        Log.d("filename", filename)
+        Timber.d(filename)
 
         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z")
 
@@ -27,7 +33,7 @@ object DataExportUtility {
             for (gpsPoint in gpsPoints) {
                 writeRow(
                         simpleDateFormat.format(gpsPoint.time),
-                        (gpsPoint.time/1000).toString(),
+                        (gpsPoint.time / 1000).toString(),
                         gpsPoint.latitude.toString(),
                         gpsPoint.longitude.toString(),
                         gpsPoint.altitude.toString(),
@@ -36,12 +42,30 @@ object DataExportUtility {
             }
         }
 
+        return filename
+
     }
 
     fun uploadFileToFirebase(path: String) {
-        var file = Uri.fromFile(File(path))
-    }
+        val storage = Firebase.storage
+        val storageRef = storage.reference
 
+        val file = Uri.fromFile(File(path + ".csv"))
+        val csvRef = storageRef.child("trips/${file.lastPathSegment}")
+
+        Timber.d("trips/${file.lastPathSegment}")
+
+        val metadata = storageMetadata {
+            contentType = "trip/csv"
+        }
+
+        val uploadTask = csvRef.putFile(file, metadata)
+        uploadTask.addOnFailureListener {
+            Timber.d("Upload not successful")
+        }.addOnSuccessListener {
+            Timber.d("Upload successful")
+        }
+    }
 
 
     private fun labelsToString(selectedTransportType: Labels?) : String {

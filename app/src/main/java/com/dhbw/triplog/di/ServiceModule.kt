@@ -11,6 +11,8 @@ import com.dhbw.triplog.services.TrackingService
 import com.dhbw.triplog.ui.MainActivity
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

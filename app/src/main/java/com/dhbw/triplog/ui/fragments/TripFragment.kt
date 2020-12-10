@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -36,11 +37,17 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.ktx.storageMetadata
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -59,6 +66,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private var filterPopup: PopupWindow? = null
     private var selectedItem: Int = -1
     private var selectedTransportType: Labels? = null
+
+    private var storage: FirebaseStorage = Firebase.storage
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -207,11 +216,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun saveGPSDataAsFile () {
         val path = context?.filesDir
         if (path != null) {
-            DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
+            val csvPath = DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
+            DataExportUtility.uploadFileToFirebase(csvPath)
         }
     }
-
-
 
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {

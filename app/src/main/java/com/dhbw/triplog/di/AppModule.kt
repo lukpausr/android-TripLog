@@ -9,11 +9,14 @@ import com.dhbw.triplog.other.Constants.KEY_DSGVO
 import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
 import com.dhbw.triplog.other.Constants.SHARED_PREFERENCES_NAME
 import com.dhbw.triplog.other.Constants.TRIP_DATABASE_NAME
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ServiceScoped
 import javax.inject.Singleton
 
 @Module
