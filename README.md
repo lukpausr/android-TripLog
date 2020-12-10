@@ -1,15 +1,16 @@
 # android-TripLog
 This app was created for position logging as part of a student research project at the DHBW Stuttgart.
-##Usage
+## Usage
 
-###Exported Data
+### Exported Data
 The position data is exported as a .csv file. The file name includes labels and the time of creation in milliseconds.
 
 The .csv file is laid out as follows: 
-'''Timestamp [yyyy:MM:dd:HH:mm:ss:SS:z], Time [s], Latitude [°], Longitude [°], Altitude [m], Speed [m/s]
-
+```
+Timestamp [yyyy:MM:dd:HH:mm:ss:SS:z], Time [s], Latitude [°], Longitude [°], Altitude [m], Speed [m/s]
+```
 The following example shows a .csv file. The file name could be 1608195983032_Car_Electric.csv
-'''
+
 | Time                       | Time_in_s  | Latitude   | Longitude  | Altitude | Speed     |
 | -------------------------- | ---------- | ---------- | ---------- | -------- | --------- |
 | 2020:12:10:18:58:24:00:GMT | 1607626704 | 53.5611583 | 10.5667417 | 0.0      | 60.92     |
@@ -34,11 +35,11 @@ The following example shows a .csv file. The file name could be 1608195983032_Ca
 | 2020:12:10:18:59:27:00:GMT | 1607626767 | 53.5560576 | 10.5962667 | 0.0      | 57.98892  |
 | 2020:12:10:18:59:31:00:GMT | 1607626771 | 53.5559676 | 10.5978666 | 0.0      | 59.135136 |
 | 2020:12:10:18:59:35:00:GMT | 1607626775 | 53.5558721 | 10.5999355 | 0.0      | 58.74276  |
-'''
 
-###Labeling
+
+### Labeling
 In the following class can be used to edit the labels for the different transporation devices
-'''
+```
 enum class Labels (val label: String, val subLabel: String, val subSubLabel : String){
     WALK ("Foot", "Walking", ""),
     RUN ("Foot", "Running", ""),
@@ -53,4 +54,4 @@ enum class Labels (val label: String, val subLabel: String, val subSubLabel : St
     S_TRAIN("Train", "Suburban", "S-Bahn"),
     SUBWAY("Train", "City", "U-Bahn")
 }
-'''
+```
