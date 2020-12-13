@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -41,14 +40,11 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.ktx.storageMetadata
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -184,6 +180,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun stopTracking() {
+
+        gpsPoints = TrackingService.allGpsPoints
+
         sendCommandToService(ACTION_STOP_SERVICE)
 
         saveGPSDataAsFile()
@@ -278,7 +277,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             map?.addPolyline(polylineOptions)
         }
     }
-
 
     private fun sendCommandToService(action: String) =
             Intent(requireContext(), TrackingService::class.java).also {

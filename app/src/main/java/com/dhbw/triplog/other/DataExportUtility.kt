@@ -2,17 +2,14 @@ package com.dhbw.triplog.other
 
 import android.location.Location
 import android.net.Uri
-import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import timber.log.Timber
 import java.io.File
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
-import javax.inject.Inject
 
 object DataExportUtility {
 

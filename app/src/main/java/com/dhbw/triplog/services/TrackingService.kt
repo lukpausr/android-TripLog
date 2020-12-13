@@ -56,6 +56,7 @@ class TrackingService : LifecycleService() {
     private var lastActivity = ""
 
     companion object {
+        var allGpsPoints = mutableListOf<Location>()
         // Mutable LiveData object to enable modification by user
         val tripTimeInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
@@ -280,6 +281,9 @@ class TrackingService : LifecycleService() {
                         .setContentText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
                 notificationManager.notify(NOTIFICATION_ID, notification.build())
             }
+        })
+        gpsPoints.observe(this, Observer {
+            allGpsPoints.add(it)
         })
     }
 
