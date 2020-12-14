@@ -13,15 +13,15 @@ import java.text.SimpleDateFormat
 
 object DataExportUtility {
 
-    fun writeGPSDataToFile(file: File, gpsPoints: MutableList<Location>, selectedTransportType: Labels?) : String {
+    fun writeGPSDataToFile(
+        path: String,
+        gpsPoints: MutableList<Location>,
+        selectedTransportType: Labels?
+    ) : String {
 
         val labels = labelsToString(selectedTransportType)
-
-        val filename = file.absolutePath +
-                "/" +
-                System.currentTimeMillis().toString() + labels
-
-        Timber.d(filename)
+        val filename = path + "/" + System.currentTimeMillis().toString() + labels
+        Timber.d("$filename.csv")
 
         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z")
 
@@ -38,16 +38,14 @@ object DataExportUtility {
                 )
             }
         }
-
         return filename
-
     }
 
     fun uploadFileToFirebase(path: String) {
         val storage = Firebase.storage
         val storageRef = storage.reference
 
-        val file = Uri.fromFile(File(path + ".csv"))
+        val file = Uri.fromFile(File("$path.csv"))
         val csvRef = storageRef.child("trips/${file.lastPathSegment}")
 
         Timber.d("trips/${file.lastPathSegment}")
@@ -63,7 +61,6 @@ object DataExportUtility {
             Timber.d("Upload successful")
         }
     }
-
 
     private fun labelsToString(selectedTransportType: Labels?) : String {
         val stringBuilder = StringBuilder()

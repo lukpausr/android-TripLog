@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +44,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -218,11 +218,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun saveGPSDataAsFile () {
-        val path = context?.filesDir
-        if (path != null) {
-            val csvPath = DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
-            DataExportUtility.uploadFileToFirebase(csvPath)
-        }
+        val path = context?.filesDir.toString()
+        val csvPath = DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
+        DataExportUtility.uploadFileToFirebase(csvPath)
     }
 
     private fun moveCameraToUser() {
@@ -387,7 +385,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
             override fun onItemClick(view: View, position: Int, item: FilterItem) {
                 selectedItem = position
-                Log.d("Label", "data = ${item.name.toString()}")
+                Timber.d("Label: data = ${item.name.toString()}")
                 when(item.name.toString()) {
                     "Fuß (gehen)" -> selectedTransportType = Labels.WALK
                     "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
