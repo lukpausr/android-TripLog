@@ -240,7 +240,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
 
             val csvPath = DataUtility.writeGPSDataToFile(path, gpsPoints)
-            DataUtility.uploadFileToFirebase(csvPath)
+            DataUtility.uploadFileToFirebase(csvPath, DeviceRandomUUID.getRUUID(sharedPref))
 
             val trip = Trip(
                 bitmap,

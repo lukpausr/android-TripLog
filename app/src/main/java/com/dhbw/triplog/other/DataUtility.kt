@@ -50,14 +50,14 @@ object DataUtility {
         return path
     }
 
-    fun uploadFileToFirebase(path: String) {
+    fun uploadFileToFirebase(path: String, uuid: String) {
         val storage = Firebase.storage
         val storageRef = storage.reference
 
         val file = Uri.fromFile(File("$path.csv"))
-        val csvRef = storageRef.child("trips/${file.lastPathSegment}")
+        val csvRef = storageRef.child("trips/$uuid/${file.lastPathSegment}")
 
-        Timber.d("trips/${file.lastPathSegment}")
+        Timber.d("trips/$uuid/${file.lastPathSegment}")
 
         val metadata = storageMetadata {
             contentType = "trip/csv"
