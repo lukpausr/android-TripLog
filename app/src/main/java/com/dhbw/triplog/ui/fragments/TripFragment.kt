@@ -110,7 +110,11 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         btnStopRecord.setOnClickListener {
             if(isTracking) {
                 isTracking = false
-                stopTracking()
+
+                gpsPoints = TrackingService.allGpsPoints
+                zoomToWholeTrack()
+                saveData()
+
                 writeToggleStateToSharedPref(false)
                 refreshButtonColor()
                 refreshTvTrackingState()
@@ -182,11 +186,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private fun stopTracking() {
 
-        gpsPoints = TrackingService.allGpsPoints
-
-        zoomToWholeTrack()
-        saveData()
-
         sendCommandToService(ACTION_STOP_SERVICE)
 
         gpsPointsLatLng.clear()
@@ -239,6 +238,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 timestamp
             )
 
+            Timber.d("GPS_Points: $gpsPoints")
             val csvPath = DataUtility.writeGPSDataToFile(path, gpsPoints)
             DataUtility.uploadFileToFirebase(csvPath, DeviceRandomUUID.getRUUID(sharedPref))
 
@@ -253,6 +253,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
 
             viewModel.insertTrip(trip)
+
+            stopTracking()
 
         }
     }
