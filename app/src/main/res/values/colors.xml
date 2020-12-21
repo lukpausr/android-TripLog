@@ -27,5 +27,6 @@
 
     <color name="dhbw_grey">#7d878d</color>
     <color name="dhbw_red">#e1061c</color>
+    <color name="dhbw_card">#F3F3F3</color>
 
 </resources>

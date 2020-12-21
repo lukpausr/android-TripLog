@@ -4,19 +4,19 @@
     <item
         android:id="@+id/infoFragment"
         android:enabled="true"
-        android:title="How to..."
+        android:title="Info"
         android:icon="@drawable/ic_baseline_help_center_24" />
 
     <item
         android:id="@+id/tripFragment"
         android:enabled="true"
         android:title="Trips"
-        android:icon="@drawable/ic_baseline_map_24" />
+        android:icon="@drawable/ic_baseline_near_me_24" />
 
     <item
         android:id="@+id/settingsFragment"
         android:enabled="true"
-        android:title="Settings"
+        android:title="Settings &amp; FAQ"
         android:icon="@drawable/ic_baseline_settings_24" />
 
 </menu>

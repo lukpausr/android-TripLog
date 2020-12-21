@@ -1,31 +1,40 @@
 package com.dhbw.triplog.other
 
+import android.content.Context
 import android.location.Location
 import android.net.Uri
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
+import com.google.gson.Gson
 import timber.log.Timber
 import java.io.File
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
+import java.util.*
 
-object DataExportUtility {
+object DataUtility {
+
+    fun getPathAndFilename(context: Context, selectedTransportType: Labels?, timestamp: Long) : String {
+        val path = context.filesDir.toString()
+        val labels = labelsToString(selectedTransportType)
+        return "$path/$timestamp$labels"
+    }
+
+    fun getFormattedDate(timestamp: Long) : String {
+        val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+        return simpleDateFormat.format(timestamp)
+    }
 
     fun writeGPSDataToFile(
-        path: String,
-        gpsPoints: MutableList<Location>,
-        selectedTransportType: Labels?
+            path: String,
+            gpsPoints: MutableList<Location>
     ) : String {
-
-        val labels = labelsToString(selectedTransportType)
-        val filename = path + "/" + System.currentTimeMillis().toString() + labels
-        Timber.d("$filename.csv")
-
-        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z")
-
-        csvWriter().open("$filename.csv") {
+        Timber.d("$path.csv")
+        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z", Locale.getDefault())
+        csvWriter().open("$path.csv") {
             writeRow("Timestamp", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed")
             for (gpsPoint in gpsPoints) {
                 writeRow(
@@ -38,7 +47,7 @@ object DataExportUtility {
                 )
             }
         }
-        return filename
+        return path
     }
 
     fun uploadFileToFirebase(path: String) {
@@ -74,6 +83,20 @@ object DataExportUtility {
             stringBuilder.append("_" + selectedTransportType?.subSubLabel)
         }
         return stringBuilder.toString()
+    }
+
+    fun locationToLatLng(location: Location) : LatLng {
+        return LatLng(location.latitude, location.longitude)
+    }
+
+    fun convertLabelToJSON(label : Labels) : String {
+        val gson = Gson()
+        return gson.toJson(label)
+    }
+
+    fun retrieveLabelFromJSON(json : String) : Labels {
+        val gson = Gson()
+        return gson.fromJson(json, Labels::class.java)
     }
 
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -13,24 +14,25 @@ import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.dhbw.triplog.R
 import com.dhbw.triplog.adapters.AlertFilterAdapter
 import com.dhbw.triplog.adapters.RecyclerviewCallbacks
+import com.dhbw.triplog.db.Trip
+import com.dhbw.triplog.other.*
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
+import com.dhbw.triplog.other.Constants.KEY_SELECTED_LABEL
 import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
 import com.dhbw.triplog.other.Constants.MAP_ZOOM
 import com.dhbw.triplog.other.Constants.POLYLINE_COLOR
 import com.dhbw.triplog.other.Constants.POLYLINE_WIDTH
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
-import com.dhbw.triplog.other.DataExportUtility
-import com.dhbw.triplog.other.FilterItem
-import com.dhbw.triplog.other.Labels
-import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
+import com.dhbw.triplog.ui.viewmodels.MainViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -50,19 +52,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.PermissionCallbacks {
 
+    private val viewModel: MainViewModel by viewModels()
+
     private var isTracking = false
-
-    @Inject
-    lateinit var sharedPref: SharedPreferences
-
     private var gpsPoints = mutableListOf<Location>()
     private var gpsPointsLatLng = mutableListOf<LatLng>()
 
     private var map: GoogleMap? = null
 
+    @Inject
+    lateinit var sharedPref: SharedPreferences
+
     private var filterPopup: PopupWindow? = null
     private var selectedItem: Int = -1
-    private var selectedTransportType: Labels? = null
 
     private var storage: FirebaseStorage = Firebase.storage
 
@@ -89,15 +91,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
         }
 
-
         btnStartRecord.setOnClickListener {
-            if(!isTracking && selectedItem != -1 && selectedTransportType != null) {
+            if(!isTracking && selectedItem != -1) {
                 isTracking = true
                 startTracking()
                 writeToggleStateToSharedPref(true)
                 refreshButtonColor()
                 refreshTvTrackingState()
-            } else if (selectedItem == -1 || selectedTransportType == null) {
+            } else if (selectedItem == -1) {
                 Toast.makeText(
                     context,
                     "Please select the transportation type first!",
@@ -183,16 +184,16 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
         gpsPoints = TrackingService.allGpsPoints
 
-        sendCommandToService(ACTION_STOP_SERVICE)
+        zoomToWholeTrack()
+        saveData()
 
-        saveGPSDataAsFile()
+        sendCommandToService(ACTION_STOP_SERVICE)
 
         gpsPointsLatLng.clear()
         gpsPoints.clear()
         map?.clear()
-
         selectedItem = -1
-        selectedTransportType = null
+
     }
 
     private fun startTracking() {
@@ -203,10 +204,20 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         sharedPref.edit().putBoolean(KEY_TRACKING_STATE, isChecked).apply()
     }
 
+    private fun writeLabelToSharedPref(label : Labels) {
+        val json = DataUtility.convertLabelToJSON(label)
+        sharedPref.edit().putString(KEY_SELECTED_LABEL, json).apply()
+    }
+
+    private fun getLabelFromSharedPref() : Labels {
+        val json = sharedPref.getString(KEY_SELECTED_LABEL, "")
+        return DataUtility.retrieveLabelFromJSON(json!!)
+    }
+
     private fun subscribeToObservers() {
         TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
             gpsPoints.add(it)
-            gpsPointsLatLng.add(locationToLatLng(it))
+            gpsPointsLatLng.add(DataUtility.locationToLatLng(it))
             addLatestPolyline()
             moveCameraToUser()
         })
@@ -217,17 +228,40 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         })
     }
 
-    private fun saveGPSDataAsFile () {
-        val path = context?.filesDir.toString()
-        val csvPath = DataExportUtility.writeGPSDataToFile(path, gpsPoints, selectedTransportType)
-        DataExportUtility.uploadFileToFirebase(csvPath)
+    private fun saveData() {
+        map?.snapshot { bitmap ->
+
+            val label = getLabelFromSharedPref()
+            val timestamp = System.currentTimeMillis()
+            val path = DataUtility.getPathAndFilename(
+                requireContext(),
+                label,
+                timestamp
+            )
+
+            val csvPath = DataUtility.writeGPSDataToFile(path, gpsPoints)
+            DataUtility.uploadFileToFirebase(csvPath)
+
+            val trip = Trip(
+                bitmap,
+                timestamp,
+                TrackingService.tripTimeInMillis.value!!,
+                DataUtility.getFormattedDate(timestamp),
+                DataUtility.convertLabelToJSON(label),
+                csvPath,
+                true
+            )
+
+            viewModel.insertTrip(trip)
+
+        }
     }
 
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {
             map?.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
-                    locationToLatLng(gpsPoints.last()),
+                    DataUtility.locationToLatLng(gpsPoints.last()),
                     MAP_ZOOM
                 )
             )
@@ -237,7 +271,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun zoomToWholeTrack() {
         val bounds = LatLngBounds.Builder()
         for(point in gpsPoints) {
-            bounds.include(locationToLatLng(point))
+            bounds.include(DataUtility.locationToLatLng(point))
         }
         map?.moveCamera(
             CameraUpdateFactory.newLatLngBounds(
@@ -247,10 +281,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 (mapView.height * 0.05f).toInt()
             )
         )
-    }
-
-    private fun locationToLatLng(location: Location) : LatLng {
-        return LatLng(location.latitude, location.longitude)
     }
 
     private fun addAllPolylines() {
@@ -270,8 +300,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             val polylineOptions = PolylineOptions()
                 .color(POLYLINE_COLOR)
                 .width(POLYLINE_WIDTH)
-                .add(locationToLatLng(previousLocation))
-                .add(locationToLatLng(currentLocation))
+                .add(DataUtility.locationToLatLng(previousLocation))
+                .add(DataUtility.locationToLatLng(currentLocation))
             map?.addPolyline(polylineOptions)
         }
     }
@@ -362,6 +392,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun showAlertFilter(): PopupWindow {
+        var selectedTransportType = Labels.WALK
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(
             R.layout.vehicle_selector,
@@ -400,6 +431,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     "S-Bahn" -> selectedTransportType = Labels.S_TRAIN
                     "U-Bahn" -> selectedTransportType = Labels.SUBWAY
                 }
+                writeLabelToSharedPref(selectedTransportType)
                 dismissPopup()
             }
         })
