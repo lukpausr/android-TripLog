@@ -9,25 +9,25 @@
         android:id="@+id/btnVehicleSelection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Transport Type"
+        android:text="Transport Type"
         android:backgroundTint="@color/dhbw_grey"
         app:layout_constraintLeft_toLeftOf="@id/btnStartRecord"
+        app:layout_constraintRight_toRightOf="@id/btnStartRecord"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/mapView" />
 
     <TextView
         android:id="@+id/tvTrackingState"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
         android:text="TRACKING STATE"
         android:textStyle="bold"
         android:paddingRight="20dp"
-        android:textSize="15dp"
         android:textColor="@color/dhbw_red"
         android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="@id/btnVehicleSelection"
         app:layout_constraintBottom_toBottomOf="@id/btnVehicleSelection"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="20dp" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
