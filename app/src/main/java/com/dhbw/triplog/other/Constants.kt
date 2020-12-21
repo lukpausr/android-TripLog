@@ -11,6 +11,9 @@ object Constants {
 
     const val BACK_STACK_ROOT_TAG = "HomeFragment"
 
+    // Random Unique User ID
+    const val DEVICE_ID = "DEVICE_ID"
+
     // Foreground Service Intent
     const val ACTION_SHOW_TRIP_FRAGMENT = "ACTION_SHOW_TRIP_FRAGMENT"
 

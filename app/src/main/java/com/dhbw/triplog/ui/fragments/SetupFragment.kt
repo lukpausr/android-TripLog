@@ -1,5 +1,6 @@
 package com.dhbw.triplog.ui.fragments
 
+import android.bluetooth.BluetoothClass
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants.KEY_DSGVO
+import com.dhbw.triplog.other.DeviceRandomUUID
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_setup.*
@@ -35,6 +37,7 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
 
         tvAccept.setOnClickListener {
             writeDSGVOAcceptedToSharedPref()
+            DeviceRandomUUID.createRUUID(sharedPref)
             findNavController().navigate(R.id.action_setupFragment_to_TripFragment)
         }
 
