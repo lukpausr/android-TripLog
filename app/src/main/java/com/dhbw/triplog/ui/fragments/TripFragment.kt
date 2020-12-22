@@ -80,7 +80,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 Gravity.BOTTOM
             )
         }
-
         btnStartRecord.setOnClickListener {
             if(!isTracking && selectedItem != -1) {
                 startTracking()
@@ -92,7 +91,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 ).show()
             }
         }
-
         btnStopRecord.setOnClickListener {
             if(isTracking) {
                 gpsPoints = TrackingService.allGpsPoints
@@ -105,9 +103,15 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             map = it
             addAllPolylines()
         }
-
     }
 
+    /*
+    Subscribe to data changes in the LiveData Objects of the Tracking Service
+    The current Tracking State is being used to update all UI Elements on a change, while the
+    GPS Points are being used to update the map element
+    The Activity Updates are currently unused but can be used to interact with the Google
+    Activity Recognition API
+     */
     private fun subscribeToObservers() {
         TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
             gpsPoints.add(it)
@@ -254,6 +258,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /*
+    Move the map / camera to the point the user is currently at
+     */
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {
             map?.animateCamera(
@@ -265,6 +272,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /*
+    Zoom map to see the whole track, to be called before making a screenshot of the trip
+     */
     private fun zoomToWholeTrack() {
         val bounds = LatLngBounds.Builder()
         for(point in gpsPoints) {
@@ -280,6 +290,11 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         )
     }
 
+    /*
+    Add all polylines (line between 2 points) to the map. The points are being provided
+    by the TrackingService because the saved points in the activities will get deleted when
+    we leave the activity
+     */
     private fun addAllPolylines() {
         gpsPointsLatLng.clear()
         for (gpsPoint in TrackingService.allGpsPoints) {
