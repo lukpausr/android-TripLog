@@ -3,4 +3,9 @@
     <string name="Home">Home</string>
     <string name="Map">Map</string>
     <string name="Settings">Settings</string>
+
+    <string name="TRACKING_ACTIVE">Tracking active</string>
+    <string name="TRACKING_INACTIVE">Tracking inactive</string>
+
+
 </resources>

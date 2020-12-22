@@ -136,9 +136,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      */
     private fun refreshTvTrackingState() {
         if(isTracking) {
-            tvTrackingState.text = "Tracking active"
+            tvTrackingState.text = resources.getString(R.string.TRACKING_ACTIVE)
         } else {
-            tvTrackingState.text = "Tracking inactive"
+            tvTrackingState.text = resources.getString(R.string.TRACKING_INACTIVE)
         }
     }
 
@@ -435,8 +435,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
             override fun onItemClick(view: View, position: Int, item: FilterItem) {
                 selectedItem = position
-                Timber.d("Label: data = ${item.name.toString()}")
-                when(item.name.toString()) {
+                Timber.d("Label: data = ${item.name}")
+                when(item.name) {
                     "Fuß (gehen)" -> selectedTransportType = Labels.WALK
                     "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
                     "Fahrrad" -> selectedTransportType = Labels.BIKE
