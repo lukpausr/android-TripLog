@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/tvTrackingState"
         android:layout_width="wrap_content"
-        android:text="TRACKING STATE"
+        android:text="Tracking inactive"
         android:textStyle="bold"
         android:paddingRight="20dp"
         android:textColor="@color/dhbw_red"

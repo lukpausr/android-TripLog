@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import com.dhbw.triplog.db.TripDatabase
 import com.dhbw.triplog.other.Constants.KEY_DSGVO
-import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
 import com.dhbw.triplog.other.Constants.SHARED_PREFERENCES_NAME
 import com.dhbw.triplog.other.Constants.TRIP_DATABASE_NAME
 import com.google.firebase.ktx.Firebase
@@ -46,10 +45,5 @@ object AppModule {
     @Provides
     fun provideDSGVOAccepted(sharedPref: SharedPreferences) =
             sharedPref.getBoolean(KEY_DSGVO, false)
-
-    @Singleton
-    @Provides
-    fun provideTrackingState(sharedPref: SharedPreferences) =
-            sharedPref.getBoolean(KEY_TRACKING_STATE, true)
 
 }

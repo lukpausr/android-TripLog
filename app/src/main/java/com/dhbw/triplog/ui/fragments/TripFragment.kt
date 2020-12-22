@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import com.dhbw.triplog.other.*
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
 import com.dhbw.triplog.other.Constants.KEY_SELECTED_LABEL
-import com.dhbw.triplog.other.Constants.KEY_TRACKING_STATE
 import com.dhbw.triplog.other.Constants.MAP_ZOOM
 import com.dhbw.triplog.other.Constants.POLYLINE_COLOR
 import com.dhbw.triplog.other.Constants.POLYLINE_WIDTH
@@ -38,9 +36,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
@@ -52,6 +47,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.PermissionCallbacks {
 
+    @Inject
+    lateinit var sharedPref: SharedPreferences
+
     private val viewModel: MainViewModel by viewModels()
 
     private var isTracking = false
@@ -60,22 +58,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     private var map: GoogleMap? = null
 
-    @Inject
-    lateinit var sharedPref: SharedPreferences
-
     private var filterPopup: PopupWindow? = null
     private var selectedItem: Int = -1
 
-    private var storage: FirebaseStorage = Firebase.storage
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mapView.onCreate(savedInstanceState)
 
         requestPermissions()
-        getToggleStateFromSharedPref()
-
         subscribeToObservers()
 
         btnVehicleSelection.setOnClickListener {
@@ -93,11 +83,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
         btnStartRecord.setOnClickListener {
             if(!isTracking && selectedItem != -1) {
-                isTracking = true
                 startTracking()
-                writeToggleStateToSharedPref(true)
-                refreshButtonColor()
-                refreshTvTrackingState()
             } else if (selectedItem == -1) {
                 Toast.makeText(
                     context,
@@ -109,15 +95,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
         btnStopRecord.setOnClickListener {
             if(isTracking) {
-                isTracking = false
-
                 gpsPoints = TrackingService.allGpsPoints
                 zoomToWholeTrack()
                 saveData()
-
-                writeToggleStateToSharedPref(false)
-                refreshButtonColor()
-                refreshTvTrackingState()
             }
         }
 
@@ -128,6 +108,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     }
 
+    /*
+    Refreshes the Tracking State Annotation in the top right corner to display
+    whether the app is currently tracking your trip or not
+     */
     private fun refreshTvTrackingState() {
         if(isTracking) {
             tvTrackingState.text = "Tracking active"
@@ -136,6 +120,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /*
+    Refreshes the Color of the "Start / Stop - Recording" Buttons depending on the
+    current tracking state
+     */
     private fun refreshButtonColor() {
         if(isTracking) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -178,29 +166,24 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    private fun getToggleStateFromSharedPref() {
-        val state = sharedPref.getBoolean(KEY_TRACKING_STATE, true)
-        refreshButtonColor()
-        refreshTvTrackingState()
-    }
-
+    /*
+    Stop Tracking Service by sending a "Stop" command to the service
+    After stopping the service the map, gpsPoints and Vehicle selection are reset
+     */
     private fun stopTracking() {
-
         sendCommandToService(ACTION_STOP_SERVICE)
 
         gpsPointsLatLng.clear()
         gpsPoints.clear()
         map?.clear()
         selectedItem = -1
-
     }
 
+    /*
+    Start Tracking Service by sending a "Start" command to the service
+     */
     private fun startTracking() {
         sendCommandToService(ACTION_START_RESUME_SERVICE)
-    }
-
-    private fun writeToggleStateToSharedPref(isChecked: Boolean) {
-        sharedPref.edit().putBoolean(KEY_TRACKING_STATE, isChecked).apply()
     }
 
     private fun writeLabelToSharedPref(label : Labels) {
@@ -221,7 +204,11 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             moveCameraToUser()
         })
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
-            isTracking = it
+            if(isTracking != it) {
+                isTracking = it
+                refreshTvTrackingState()
+                refreshButtonColor()
+            }
         })
         TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
         })
