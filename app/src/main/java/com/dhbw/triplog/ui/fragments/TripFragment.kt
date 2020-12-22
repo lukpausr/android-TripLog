@@ -108,6 +108,24 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
     }
 
+    private fun subscribeToObservers() {
+        TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
+            gpsPoints.add(it)
+            gpsPointsLatLng.add(DataUtility.locationToLatLng(it))
+            addLatestPolyline()
+            moveCameraToUser()
+        })
+        TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
+            if(isTracking != it) {
+                isTracking = it
+                refreshTvTrackingState()
+                refreshButtonColor()
+            }
+        })
+        TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
+        })
+    }
+
     /*
     Refreshes the Tracking State Annotation in the top right corner to display
     whether the app is currently tracking your trip or not
@@ -186,32 +204,23 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         sendCommandToService(ACTION_START_RESUME_SERVICE)
     }
 
+    /*
+    Save the currently selected Label object to SharedPreferences
+    Because you cannot save non-primitive objects in SharedPreferences, the Label object is
+    converted into json to be saved as string
+     */
     private fun writeLabelToSharedPref(label : Labels) {
         val json = DataUtility.convertLabelToJSON(label)
         sharedPref.edit().putString(KEY_SELECTED_LABEL, json).apply()
     }
 
+    /*
+    Return the currently selected Label object from SharedPreferences
+    Because it is a json string, we need to convert it back to a Label object
+     */
     private fun getLabelFromSharedPref() : Labels {
         val json = sharedPref.getString(KEY_SELECTED_LABEL, "")
         return DataUtility.retrieveLabelFromJSON(json!!)
-    }
-
-    private fun subscribeToObservers() {
-        TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
-            gpsPoints.add(it)
-            gpsPointsLatLng.add(DataUtility.locationToLatLng(it))
-            addLatestPolyline()
-            moveCameraToUser()
-        })
-        TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
-            if(isTracking != it) {
-                isTracking = it
-                refreshTvTrackingState()
-                refreshButtonColor()
-            }
-        })
-        TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
-        })
     }
 
     private fun saveData() {
@@ -242,7 +251,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             viewModel.insertTrip(trip)
 
             stopTracking()
-
         }
     }
 
@@ -273,6 +281,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     }
 
     private fun addAllPolylines() {
+        gpsPointsLatLng.clear()
+        for (gpsPoint in TrackingService.allGpsPoints) {
+            gpsPointsLatLng.add(DataUtility.locationToLatLng(gpsPoint))
+        }
         for(latlng in gpsPointsLatLng) {
             val polylineOptions = PolylineOptions()
                 .color(POLYLINE_COLOR)
@@ -295,6 +307,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /*
+    Sending a User defined (String) command to the Tracking Service
+     */
     private fun sendCommandToService(action: String) =
             Intent(requireContext(), TrackingService::class.java).also {
                 it.action = action
@@ -461,6 +476,5 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
 
     }
-
 
 }
