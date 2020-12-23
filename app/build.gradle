@@ -6,6 +6,9 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: "dagger.hilt.android.plugin"
 apply plugin: 'com.google.gms.google-services'
 
+apply plugin: 'org.jetbrains.dokka'
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
@@ -26,12 +29,28 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+}
+
+dokka {
+    outputFormat = 'html' // use 'javadoc' to get standard java docs
+    outputDirectory = "$buildDir/javadoc"
+
+    configuration {
+        includeNonPublic = false
+        skipEmptyPackages = true
+        skipDeprecated = true
+        reportUndocumented = true
+        jdkVersion = 8
     }
 }
 
