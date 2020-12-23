@@ -26,6 +26,9 @@ object Constants {
     const val LOCATION_UPDATE_INTERVAL = 5000L
     const val FASTEST_LOCATION_INTERVAL = 3000L
 
+    // Sensor Update Interval uS
+    const val SENSOR_UPDATE_INTERVAL = 1000
+
     // Activity Recognition
     const val TRANSITION_RECEIVER_ACTION = "TRANSITION_RECEIVER_ACTION"
 

@@ -9,6 +9,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.os.Build
 import android.os.Looper
@@ -25,6 +29,7 @@ import com.dhbw.triplog.other.Constants.LOCATION_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
+import com.dhbw.triplog.other.Constants.SENSOR_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TRANSITION_RECEIVER_ACTION
 import com.dhbw.triplog.other.TrackingUtility
@@ -36,8 +41,11 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TrackingService : LifecycleService() {
+class TrackingService : LifecycleService(), SensorEventListener {
 
+    /*
+    GPS DATA
+     */
     @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -52,8 +60,13 @@ class TrackingService : LifecycleService() {
     lateinit var curNotificationBuilder: NotificationCompat.Builder
 
     private val tripTimeInSeconds = MutableLiveData<Long>()
-
     private var lastActivity = ""
+
+    /*
+    SENSOR DATA
+     */
+    private lateinit var sensorManager: SensorManager
+
 
     companion object {
         var allGpsPoints = mutableListOf<Location>()
@@ -62,6 +75,10 @@ class TrackingService : LifecycleService() {
         val isTracking = MutableLiveData<Boolean>()
         val activityUpdates = MutableLiveData<String>()
         val gpsPoints = MutableLiveData<Location>()
+
+        var accelerometerData = mutableListOf<SensorEvent>()
+        var linearAccelerometerData = mutableListOf<SensorEvent>()
+        var gyroscopeData = mutableListOf<SensorEvent>()
     }
 
     override fun onCreate() {
@@ -78,6 +95,8 @@ class TrackingService : LifecycleService() {
                 PendingIntent.FLAG_UPDATE_CURRENT
         )
 
+        setupSensor()
+
         isTracking.observe(this, Observer {
             Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
@@ -88,6 +107,8 @@ class TrackingService : LifecycleService() {
             //updateNotificationState(isTracking.value!!)
             activityChanged(it)
         })
+
+
 
     }
 
@@ -114,6 +135,7 @@ class TrackingService : LifecycleService() {
 
     private fun stopService() {
         unregisterReceiver(activityReceiver)
+        unregisterSensors()
         pauseService()
         stopForeground(true)
         stopSelf()
@@ -121,8 +143,52 @@ class TrackingService : LifecycleService() {
 
     private fun pauseService() {
         isTracking.postValue(false)
+        unregisterSensors()
         isTimerEnabled = false
     }
+
+
+    /*
+    Sensor
+     */
+
+    private fun setupSensor() {
+        // Return reference to sensorService
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    }
+
+    private fun registerSensors() {
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
+            sensorManager.registerListener(this, it, SENSOR_UPDATE_INTERVAL)
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)?.also {
+            sensorManager.registerListener(this, it, SENSOR_UPDATE_INTERVAL)
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)?.also {
+            sensorManager.registerListener(this, it, SENSOR_UPDATE_INTERVAL)
+        }
+    }
+
+    private fun unregisterSensors() {
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event != null) {
+            when (event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> accelerometerData.add(event)
+                Sensor.TYPE_LINEAR_ACCELERATION -> linearAccelerometerData.add(event)
+                Sensor.TYPE_GYROSCOPE -> gyroscopeData.add(event)
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {   }
+
+
+    /*
+    GPS
+     */
 
     private fun addTrackPoint(location: Location?) {
         if (location != null) {
@@ -285,6 +351,9 @@ class TrackingService : LifecycleService() {
         gpsPoints.observe(this, Observer {
             allGpsPoints.add(it)
         })
+
+        registerSensors()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

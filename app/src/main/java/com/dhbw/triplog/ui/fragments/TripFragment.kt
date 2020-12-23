@@ -251,7 +251,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 csvPath,
                 true
             )
-
             viewModel.insertTrip(trip)
 
             stopTracking()
