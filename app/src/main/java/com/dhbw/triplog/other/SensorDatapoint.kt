@@ -1,6 +1,5 @@
 package com.dhbw.triplog.other
 
-import android.hardware.Sensor
 import android.hardware.SensorEvent
 
 /*
@@ -19,7 +18,7 @@ class SensorDatapoint (private val event: SensorEvent) {
     val sensor = event.sensor
 
     override fun toString(): String {
-        return "Timestamp: $timestamp Values: $values Sensor: $sensor"
+        return "Timestamp: $timestamp Values: $values"
     }
 
 }
