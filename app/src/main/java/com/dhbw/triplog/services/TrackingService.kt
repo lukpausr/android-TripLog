@@ -32,6 +32,7 @@ import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
 import com.dhbw.triplog.other.Constants.SENSOR_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TRANSITION_RECEIVER_ACTION
+import com.dhbw.triplog.other.SensorDatapoint
 import com.dhbw.triplog.other.TrackingUtility
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -52,12 +53,12 @@ class TrackingService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var activityRecognitionClient: ActivityRecognitionClient
 
-    lateinit var activityRecognitionPendingIntent : PendingIntent
+    private lateinit var activityRecognitionPendingIntent : PendingIntent
 
     @Inject
     lateinit var baseNotificationBuilder: NotificationCompat.Builder
 
-    lateinit var curNotificationBuilder: NotificationCompat.Builder
+    private lateinit var curNotificationBuilder: NotificationCompat.Builder
 
     private val tripTimeInSeconds = MutableLiveData<Long>()
     private var lastActivity = ""
@@ -76,9 +77,9 @@ class TrackingService : LifecycleService(), SensorEventListener {
         val activityUpdates = MutableLiveData<String>()
         val gpsPoints = MutableLiveData<Location>()
 
-        var accelerometerData = mutableListOf<SensorEvent>()
-        var linearAccelerometerData = mutableListOf<SensorEvent>()
-        var gyroscopeData = mutableListOf<SensorEvent>()
+        val accelerometerData = mutableListOf<SensorDatapoint>()
+        val linearAccelerometerData = mutableListOf<SensorDatapoint>()
+        val gyroscopeData = mutableListOf<SensorDatapoint>()
     }
 
     override fun onCreate() {
@@ -175,10 +176,11 @@ class TrackingService : LifecycleService(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
+            val datapoint = SensorDatapoint(event)
             when (event.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> accelerometerData.add(event)
-                Sensor.TYPE_LINEAR_ACCELERATION -> linearAccelerometerData.add(event)
-                Sensor.TYPE_GYROSCOPE -> gyroscopeData.add(event)
+                Sensor.TYPE_ACCELEROMETER -> accelerometerData.add(datapoint)
+                Sensor.TYPE_LINEAR_ACCELERATION -> linearAccelerometerData.add(datapoint)
+                Sensor.TYPE_GYROSCOPE -> gyroscopeData.add(datapoint)
             }
         }
     }
@@ -274,7 +276,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
             if(ActivityRecognitionResult.hasResult(intent)) {
                 val result = ActivityRecognitionResult.extractResult(intent)!!
                 activityUpdates.postValue(result.mostProbableActivity.toString())
-                Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity.toString()}")
+                Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity}")
             }
         }
     }

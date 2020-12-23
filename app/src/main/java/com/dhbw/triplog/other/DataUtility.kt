@@ -1,6 +1,7 @@
 package com.dhbw.triplog.other
 
 import android.content.Context
+import android.hardware.SensorEvent
 import android.location.Location
 import android.net.Uri
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
@@ -28,13 +29,18 @@ object DataUtility {
         return simpleDateFormat.format(timestamp)
     }
 
+    /*
+    https://github.com/doyaaaaaken/kotlin-csv
+     */
     fun writeGPSDataToFile(
             path: String,
             gpsPoints: MutableList<Location>
     ) : String {
-        Timber.d("$path.csv")
+        val filePath = path + "_GPS"
+        Timber.d("$filePath.csv")
+
         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z", Locale.getDefault())
-        csvWriter().open("$path.csv") {
+        csvWriter().open("$filePath.csv") {
             writeRow("Timestamp", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed")
             for (gpsPoint in gpsPoints) {
                 writeRow(
@@ -47,8 +53,58 @@ object DataUtility {
                 )
             }
         }
-        return path
+        return filePath
     }
+
+    /*
+    https://github.com/doyaaaaaken/kotlin-csv
+     */
+    fun writeSensorDataToFile(
+            path: String,
+            accelerometerData: MutableList<SensorDatapoint>,
+            linearAccelerometerData: MutableList<SensorDatapoint>,
+            gyroscopeData: MutableList<SensorDatapoint>
+    ) : String {
+        val filePath = path + "_SENSOR"
+        Timber.d("$filePath.csv")
+
+        Timber.d("$accelerometerData")
+
+        val numberOfElements = Math.max(accelerometerData.size, linearAccelerometerData.size, gyroscopeData.size)
+
+        Timber.d("$accelerometerData")
+
+        csvWriter().open("$filePath.csv") {
+            writeRow(
+                    "Time_in_ns", "ACC_X", "ACC_Y", "ACC_Z",
+                    "Time_in_ns", "LINEAR_ACC_X", "LINEAR_ACC_Y", "LINEAR_ACC_Z",
+                    "Time_in_ns", "w_X", "w_Y", "w_Z"
+            )
+            for (i in 0 until numberOfElements) {
+                writeRow(
+                    convertEvent(accelerometerData.getOrNull(i))
+                            + convertEvent(linearAccelerometerData.getOrNull(i))
+                            + convertEvent(gyroscopeData.getOrNull(i))
+                )
+            }
+        }
+        return filePath
+    }
+
+    private fun convertEvent (
+            sensorDatapoint: SensorDatapoint?
+    ) : List<String> {
+        if (sensorDatapoint != null) {
+            return listOf(
+                    sensorDatapoint.timestamp.toString(),
+                    sensorDatapoint.values[0].toString(),
+                    sensorDatapoint.values[1].toString(),
+                    sensorDatapoint.values[2].toString()
+            )
+        }
+        return emptyList()
+    }
+
 
     fun uploadFileToFirebase(path: String, uuid: String) {
         val storage = Firebase.storage

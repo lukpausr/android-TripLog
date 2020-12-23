@@ -13,7 +13,8 @@ data class Trip(
 
     var date: String? = null,
     var label: String? = null,
-    var fileName: String? = null,
+    var fileNameGPS: String? = null,
+    var fileNameSensor: String? = null,
     var uploadStatus: Boolean = false
 ) {
     @PrimaryKey(autoGenerate = true)

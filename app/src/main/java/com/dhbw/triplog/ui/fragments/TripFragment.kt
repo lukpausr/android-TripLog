@@ -239,8 +239,19 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
 
             Timber.d("GPS_Points: $gpsPoints")
-            val csvPath = DataUtility.writeGPSDataToFile(path, gpsPoints)
-            DataUtility.uploadFileToFirebase(csvPath, DeviceRandomUUID.getRUUID(sharedPref))
+            val csvPathGPS = DataUtility.writeGPSDataToFile(
+                    path,
+                    gpsPoints
+            )
+            val csvPathSensor = DataUtility.writeSensorDataToFile(
+                    path,
+                    TrackingService.accelerometerData,
+                    TrackingService.linearAccelerometerData,
+                    TrackingService.gyroscopeData
+            )
+
+            DataUtility.uploadFileToFirebase(csvPathGPS, DeviceRandomUUID.getRUUID(sharedPref))
+            DataUtility.uploadFileToFirebase(csvPathSensor, DeviceRandomUUID.getRUUID(sharedPref))
 
             val trip = Trip(
                 bitmap,
@@ -248,7 +259,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 TrackingService.tripTimeInMillis.value!!,
                 DataUtility.getFormattedDate(timestamp),
                 DataUtility.convertLabelToJSON(label),
-                csvPath,
+                csvPathGPS,
+                csvPathSensor,
                 true
             )
             viewModel.insertTrip(trip)
