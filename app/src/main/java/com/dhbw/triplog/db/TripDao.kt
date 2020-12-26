@@ -18,4 +18,10 @@ interface TripDao {
     @Query("SELECT * FROM trip_table ORDER BY timeInMillis DESC")
     fun getAllTripsSortedByTimeInMillis(): LiveData<List<Trip>>
 
+    @Query("SELECT * FROM trip_table WHERE uploadStatus = 0")
+    fun getAllTripsNotUploaded(): LiveData<List<Trip>>
+
+    @Query("UPDATE trip_table SET uploadStatus = :status WHERE id =:id")
+    suspend fun updateTrip(status: Boolean, id: Int)
+
 }

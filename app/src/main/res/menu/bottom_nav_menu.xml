@@ -4,8 +4,8 @@
     <item
         android:id="@+id/infoFragment"
         android:enabled="true"
-        android:title="Info"
-        android:icon="@drawable/ic_baseline_help_center_24" />
+        android:title="Upload"
+        android:icon="@drawable/ic_baseline_cloud_upload_24" />
 
     <item
         android:id="@+id/tripFragment"

@@ -15,4 +15,8 @@ class MainRepository @Inject constructor(
 
     fun getAllTripsSortedByTimeInMillis() = tripDao.getAllTripsSortedByTimeInMillis()
 
+    fun getAllTripsNotUploaded() = tripDao.getAllTripsNotUploaded()
+
+    suspend fun updateTrip(status: Boolean, id: Int) = tripDao.updateTrip(status, id)
+
 }

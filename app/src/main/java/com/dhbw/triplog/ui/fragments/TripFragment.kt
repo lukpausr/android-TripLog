@@ -250,8 +250,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     TrackingService.gyroscopeData
             )
 
-            DataUtility.uploadFileToFirebase(csvPathGPS, DeviceRandomUUID.getRUUID(sharedPref))
-            DataUtility.uploadFileToFirebase(csvPathSensor, DeviceRandomUUID.getRUUID(sharedPref))
+            //DataUtility.uploadFileToFirebase(csvPathGPS, DeviceRandomUUID.getRUUID(sharedPref))
+            //DataUtility.uploadFileToFirebase(csvPathSensor, DeviceRandomUUID.getRUUID(sharedPref))
 
             val trip = Trip(
                 bitmap,
@@ -261,7 +261,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 DataUtility.convertLabelToJSON(label),
                 csvPathGPS,
                 csvPathSensor,
-                true
+                false
             )
             viewModel.insertTrip(trip)
 
