@@ -6,7 +6,8 @@
     app:cardCornerRadius="4dp"
     app:cardBackgroundColor="@color/dhbw_card"
     android:layout_margin="4dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cvTrip">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

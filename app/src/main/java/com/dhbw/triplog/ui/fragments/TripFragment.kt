@@ -250,9 +250,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     TrackingService.gyroscopeData
             )
 
-            //DataUtility.uploadFileToFirebase(csvPathGPS, DeviceRandomUUID.getRUUID(sharedPref))
-            //DataUtility.uploadFileToFirebase(csvPathSensor, DeviceRandomUUID.getRUUID(sharedPref))
-
             val trip = Trip(
                 bitmap,
                 timestamp,

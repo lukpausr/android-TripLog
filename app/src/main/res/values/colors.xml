@@ -29,4 +29,7 @@
     <color name="dhbw_red">#e1061c</color>
     <color name="dhbw_card">#F3F3F3</color>
 
+    <color name="color_notUploaded">#A3F44336</color>
+    <color name="color_Uploaded">#A38BC34A</color>
+
 </resources>

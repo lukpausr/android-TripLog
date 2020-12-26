@@ -4,6 +4,7 @@ import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -52,12 +53,14 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
             tvDate.text = DataUtility.getFormattedDate(trip.timestamp)
             tvTime.text = TrackingUtility.getFormattedStopWatchTime(trip.timeInMillis)
-            tvLabel.text = trip.label
+            tvLabel.text = trip.label?.let { DataUtility.retrieveLabelFromJSON(it).label }
 
             if(trip.uploadStatus) {
                 tvUpload.text = "Uploaded"
+                cvTrip.setBackgroundColor(ContextCompat.getColor(context, R.color.color_Uploaded))
             } else {
-                tvUpload.text = "Error"
+                tvUpload.text = "Not Uploaded"
+                cvTrip.setBackgroundColor(ContextCompat.getColor(context, R.color.color_notUploaded))
             }
         }
     }
