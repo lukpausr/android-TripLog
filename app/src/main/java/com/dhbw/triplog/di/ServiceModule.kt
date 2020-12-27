@@ -27,11 +27,11 @@ object ServiceModule {
             @ApplicationContext app: Context
     ) = FusedLocationProviderClient(app)
 
-    @ServiceScoped
+/*    @ServiceScoped
     @Provides
     fun provideActivityRecognitionClient(
             @ApplicationContext app: Context
-    ) = ActivityRecognitionClient(app)
+    ) = ActivityRecognitionClient(app)*/
 
     @ServiceScoped
     @Provides

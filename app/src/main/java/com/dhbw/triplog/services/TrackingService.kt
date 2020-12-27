@@ -129,28 +129,38 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * foreground service and finally stopping the service itself
      */
     private fun stopService() {
-        unregisterSensors()
+        isTracking.postValue(false)
         pauseService()
         stopForeground(true)
         stopSelf()
     }
 
+    /**
+     * Pause service by posting 'false' to the observed MutableLiveData object 'isTracking',
+     * unregistering the sensors and disabling the Timer
+     */
     private fun pauseService() {
         isTracking.postValue(false)
         unregisterSensors()
         isTimerEnabled = false
     }
 
-
-    /*
-    Sensor
+    /**
+     * SENSOR RELATED METHODS
      */
 
+    /**
+     * Setting up the sensor by creating a reference to sensorService for the
+     * 'lateinit var sensorManager'
+     */
     private fun setupSensor() {
-        // Return reference to sensorService
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
+    /**
+     * Registering listeners to sensors for 'sensorManager' of type:
+     * ACCELEROMETER, LINEAR_ACCELERATION and GYROSCOPE
+     */
     private fun registerSensors() {
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
             sensorManager.registerListener(this, it, SENSOR_UPDATE_INTERVAL)
@@ -163,10 +173,23 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
+    /**
+     * Unregistering the sensors by deleting all listeners setup for 'sensorManager'
+     */
     private fun unregisterSensors() {
         sensorManager.unregisterListener(this)
     }
 
+    /**
+     * Overriding onSensorChanged to save the sensor output, each time a onSensorChanged
+     * event is being called.
+     * Because the event parameter is pointing to the SensorEvent and the SensorEvent is overridden
+     * with each onSensorChanged call, we need to copy the SensorEvent to have persistent data. The
+     * solution for this is to create a custom class 'SensorDatapoint', which contains all
+     * properties of 'SensorEvent' we need to use later on
+     *
+     * @param event SensorEvent object, which is always the same (being pointed to!)
+     */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
             val datapoint = SensorDatapoint(event)
@@ -178,20 +201,33 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
+    /**
+     * Overriding because of interface implementation
+     */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {   }
 
-
-    /*
-    GPS
+    /**
+     * GPS RELATED METHODS
      */
 
+    /**
+     * Adding a GPS Point to the Mutable LiveData Object 'gpsPoints' which can be observed
+     * by the TripFragment to show the path on Google Maps
+     *
+     * @param location Location Object containing information about a recorded GPS Point
+     */
     private fun addTrackPoint(location: Location?) {
         if (location != null) {
             gpsPoints.postValue(location)
         }
     }
 
-    // Suppress possible because permissions are already checked and handled by EasyPermissions
+    /**
+     * updates the location tracking to receive location Updates
+     * Suppress is possible because permissions are already checked and handled by EasyPermissions
+     *
+     * @param isTracking Information about the current tracking state
+     */
     @SuppressLint("MissingPermission")
     private fun updateLocationTracking(isTracking: Boolean) {
         if(isTracking) {
@@ -214,7 +250,9 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
-    // Anonymous inner class with overridden onLocationResult functionality
+    /**
+     * Anonymous inner class with overridden onLocationResult functionality
+     */
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             super.onLocationResult(result)
@@ -229,11 +267,21 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
+    /**
+     * FOREGROUND SERVICE RELATED METHODS
+     */
+
     private var timeStarted = 0L
     private var tripTime = 0L
     private var lastSecondTimestamp = 0L
     private var isTimerEnabled = false
 
+    /**
+     * Timer functionality, once started, the timer continues to count in a coroutine and posts
+     * updates every second in 'tripTimeInSeconds' MutableLiveData Object
+     * The Timer can be stopped by setting 'isTimerEnabled' to true
+     * When starting the timer, 'isTracking' will be automatically set to true
+     */
     private fun startTimer() {
         isTimerEnabled = true
 
@@ -260,10 +308,17 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
+    /**
+     * Starting the foreground service by setting 'isTracking' to true, starting the timer and
+     * creating the necessary notification channel
+     * Within this call, tripTimeInSeconds will be observed to update the notification element and
+     * to save each collected GPS Point in a MutableList 'allGpsPoints'
+     */
     private fun startForegroundService() {
+        // Starting the actual tracking / logging
         isTracking.postValue(true)
-
         startTimer()
+        registerSensors()
 
         // Get Notification Manager
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
@@ -277,6 +332,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
         // Start Foreground Service
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
 
+        // Observe LiveData Objects
         tripTimeInSeconds.observe(this, Observer {
             if(isTracking.value!!) {
                 val notification = curNotificationBuilder
@@ -287,15 +343,15 @@ class TrackingService : LifecycleService(), SensorEventListener {
                 notificationManager.notify(NOTIFICATION_ID, notification.build())
             }
         })
-
         gpsPoints.observe(this, Observer {
             allGpsPoints.add(it)
         })
-
-        registerSensors()
-
     }
 
+    /**
+     * Create a notification channel which is being needed to create a foreground activity
+     * on Android Oreo and higher
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(notificationManager: NotificationManager) {
         val channel = NotificationChannel(
@@ -305,5 +361,4 @@ class TrackingService : LifecycleService(), SensorEventListener {
         )
         notificationManager.createNotificationChannel(channel)
     }
-
 }

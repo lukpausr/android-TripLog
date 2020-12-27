@@ -64,7 +64,8 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         })
 
         btnUpload.setOnClickListener {
-            if(isOnline(requireContext())) {
+            val online = isOnline(requireContext())
+            if(online) {
                 uploadAllTrips()
             } else {
                 Toast.makeText(
@@ -93,9 +94,13 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
     private fun uploadAllTrips() {
         // Get the Random Unique User ID out of sharedPreferences
         val ruuid = DeviceRandomUUID.getRUUID(sharedPref)
+        val trips = mutableListOf<Trip>()
+        for(trip in tripsNotUploaded) {
+            trips.add(trip)
+        }
         // Upload all Data to the Cloud, annotated with the User ID for encrypted
         // User Identification
-        for(trip in tripsNotUploaded) {
+        for(trip in trips) {
             Timber.d("GPS: ${trip.fileNameGPS} + SENSOR: ${trip.fileNameSensor}")
             trip.fileNameGPS?.let { DataUtility.uploadFileToFirebase(it, ruuid) }
             trip.fileNameSensor?.let { DataUtility.uploadFileToFirebase(it, ruuid) }
