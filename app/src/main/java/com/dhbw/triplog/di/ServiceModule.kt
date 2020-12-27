@@ -27,12 +27,6 @@ object ServiceModule {
             @ApplicationContext app: Context
     ) = FusedLocationProviderClient(app)
 
-/*    @ServiceScoped
-    @Provides
-    fun provideActivityRecognitionClient(
-            @ApplicationContext app: Context
-    ) = ActivityRecognitionClient(app)*/
-
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(
