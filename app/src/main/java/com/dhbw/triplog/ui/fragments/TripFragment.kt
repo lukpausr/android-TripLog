@@ -208,48 +208,62 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    /*
-    Stop Tracking Service by sending a "Stop" command to the service
-    After stopping the service the map, gpsPoints and Vehicle selection are reset
+    /**
+     * Stop Tracking Service by sending a "Stop" command to the service
+     * After stopping the service the map, gpsPoints and Vehicle selection are reset
      */
     private fun stopTracking() {
         sendCommandToService(ACTION_STOP_SERVICE)
-
-        gpsPointsLatLng.clear()
-        gpsPoints.clear()
-        map?.clear()
-        selectedItem = -1
+        gpsPointsLatLng.clear()     // Clear the gpsPointsLatLng and gpsPoints
+        gpsPoints.clear()           // array in preparation for next record
+        map?.clear()                // Clear the map output
+        selectedItem = -1           // Set the currently selected vehicle to "undefined" to
+                                    // force the user to select it again before a new record
     }
 
-    /*
-    Start Tracking Service by sending a "Start" command to the service
+    /**
+     * Start Tracking Service by sending a "Start" command to the Tracking Service
      */
     private fun startTracking() {
         sendCommandToService(ACTION_START_RESUME_SERVICE)
     }
 
-    /*
-    Save the currently selected Label object to SharedPreferences
-    Because you cannot save non-primitive objects in SharedPreferences, the Label object is
-    converted into json to be saved as string
+    /**
+     * Save the currently selected Label object to SharedPreferences
+     * Because you cannot save non-primitive objects in SharedPreferences, the Label object is
+     * converted into json to be saved as string
+     *
+     * @param label Currently selected label
      */
     private fun writeLabelToSharedPref(label : Labels) {
         val json = DataUtility.convertLabelToJSON(label)
         sharedPref.edit().putString(KEY_SELECTED_LABEL, json).apply()
     }
 
-    /*
-    Return the currently selected Label object from SharedPreferences
-    Because it is a json string, we need to convert it back to a Label object
+    /**
+     * Return the currently selected Label object from SharedPreferences
+     * Because it is a json string, we need to convert it back to a Label object
+     *
+     * @return Currently selected label
      */
     private fun getLabelFromSharedPref() : Labels {
         val json = sharedPref.getString(KEY_SELECTED_LABEL, "")
         return DataUtility.retrieveLabelFromJSON(json!!)
     }
 
+    /**
+     * Saving the recorded data to .csv files. Creating a new DB entry with the recorded data and
+     * the links of the .csv files
+     * Stops the tracking entirely after saving the data in the .csv files and database
+     */
     private fun saveData() {
+
+        // Screenshot the current map
         map?.snapshot { bitmap ->
 
+            // Collect important information: Currently selected label, Current time in Millis
+            // The information is being used to create a unique path / filename for the
+            // collected data
             val label = getLabelFromSharedPref()
             val timestamp = System.currentTimeMillis()
             val path = DataUtility.getPathAndFilename(
@@ -258,11 +272,15 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 timestamp
             )
 
+            // Debugging: View all recorded GPS Points in console
             Timber.d("GPS_Points: $gpsPoints")
+
+            // Writing the GPS Data to a .csv file and saving the files' path in csvPathGPS
             val csvPathGPS = DataUtility.writeGPSDataToFile(
                     path,
                     gpsPoints
             )
+            // Writing the Sensor Data to a .csv file and saving the files' path in csvPathSensor
             val csvPathSensor = DataUtility.writeSensorDataToFile(
                     path,
                     TrackingService.accelerometerData,
@@ -270,6 +288,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     TrackingService.gyroscopeData
             )
 
+            // Creating a new Trip Object with: A screenshot of the map (bitmap), the timestamp,
+            // the total recording time provided by the Tracking Service, the current Date,
+            // the label as well as both .csv paths. The UploadStatus is set to 'false' because
+            // the files are not being uploaded yet.
             val trip = Trip(
                 bitmap,
                 timestamp,
@@ -282,12 +304,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
             viewModel.insertTrip(trip)
 
+            // Calling the stop Tracking function to stop the service and to delete all data
+            // regarding the last recorded trip
             stopTracking()
         }
     }
 
-    /*
-    Move the map / camera to the point the user is currently at
+    /**
+     * Move the map / camera to the point the user is currently at
      */
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {
@@ -300,8 +324,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    /*
-    Zoom map to see the whole track, to be called before making a screenshot of the trip
+    /**
+     * Zoom map to see the whole track, to be called before making a screenshot of the trip
      */
     private fun zoomToWholeTrack() {
         val bounds = LatLngBounds.Builder()
@@ -318,10 +342,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         )
     }
 
-    /*
-    Add all polylines (line between 2 points) to the map. The points are being provided
-    by the TrackingService because the saved points in the activities will get deleted when
-    we leave the activity
+    /**
+     * Add all polylines (line between 2 points) to the map. The points are being provided
+     * by the TrackingService because the saved points in the activities will get deleted when
+     * we leave the activity
      */
     private fun addAllPolylines() {
         gpsPointsLatLng.clear()
@@ -337,6 +361,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /**
+     * Append the line between the two latest GPS Points to the current Polyline. With this it is
+     * not necessary to use the addAllPolylines method each time a GPS point is added
+     */
     private fun addLatestPolyline() {
         if(gpsPoints.isNotEmpty() && gpsPoints.size > 1) {
             val previousLocation = gpsPoints[gpsPoints.size - 2]
@@ -350,8 +378,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    /*
-    Sending a User defined (String) command to the Tracking Service
+    /**
+     * Sending a user defined command to the Tracking Service
+     *
+     * @param action The action which is going to be send to the TrackingService as a String
      */
     private fun sendCommandToService(action: String) =
             Intent(requireContext(), TrackingService::class.java).also {
@@ -359,6 +389,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 requireContext().startService(it)
             }
 
+    /**
+     * Requesting user permissions for GPS Tracking via EasyPermissions by calling the
+     * requestPermissions method.
+     * Depending on the used Android Version, different permission requests apply to the user
+     * https://github.com/googlesamples/easypermissions
+     */
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
             return
@@ -384,6 +420,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /**
+     * Direct the user to the system settings screen for this app, if he denied permissions with
+     * the "Never Ask Again" option
+     * https://github.com/googlesamples/easypermissions#required-permissions
+     *
+     * @param requestCode
+     * @param permissions
+     */
     override fun onPermissionsDenied(requestCode: Int, permissions: MutableList<String>) {
         if(EasyPermissions.somePermissionPermanentlyDenied(this, permissions)) {
             AppSettingsDialog.Builder(this).build().show()
@@ -392,8 +436,23 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
+    /**
+     * Necessary override because of implementation of PermissionCallbacks interface
+     * https://github.com/googlesamples/easypermissions#request-permissions
+     *
+     * @param requestCode
+     * @param perms
+     */
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {    }
 
+    /**
+     * Override of onRequestPermissionResult according to the EasyPermissions Github Usage Guide
+     * https://github.com/googlesamples/easypermissions#basic
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -401,6 +460,111 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    /**
+     * Setting up and showing the PopupWindow for the vehicle selection
+     *
+     * @return Popup window for vehicle selection
+     */
+    private fun showAlertFilter(): PopupWindow {
+        // Set selectedTransportType variable to Labels.WALK, will be reset to another value
+        // later. Reason: when condition is not happy, if the variable is not yet initialized
+        var selectedTransportType = Labels.WALK
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(
+            R.layout.vehicle_selector,
+            rootView,
+            false
+        )
+        // Create a reference to the RecyclerView in vehicle_selector.xml
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                recyclerView.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        // Create a reference to the AlertFilterAdapter, required for filling the
+        // recycler view with content
+        val adapter = AlertFilterAdapter(requireContext())
+        // Insert the different vehicle selection items (Filter Items) into the adapter
+        adapter.addAlertFilter(getFilterItems())
+
+        recyclerView.adapter = adapter
+        adapter.selectedItem(selectedItem)
+
+        // Set a onClickListener on the adapter to identify clicks on specific items
+        adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
+            override fun onItemClick(view: View, position: Int, item: FilterItem) {
+                selectedItem = position
+                Timber.d("Label: data = ${item.name}")
+                when(item.name) {
+                    "Fuß (gehen)" -> selectedTransportType = Labels.WALK
+                    "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
+                    "Fahrrad" -> selectedTransportType = Labels.BIKE
+                    "E-Bike" -> selectedTransportType = Labels.E_BIKE
+                    "E-Roller" -> selectedTransportType = Labels.E_SCOOTER
+                    "Auto (Konventionell)" -> selectedTransportType = Labels.CAR
+                    "Auto (Elektrisch)" -> selectedTransportType = Labels.ELECTRIC_CAR
+                    "Auto (Hybrid)" -> selectedTransportType = Labels.HYBRID_CAR
+                    "Bus" -> selectedTransportType = Labels.BUS
+                    "Bahn" -> selectedTransportType = Labels.TRAIN
+                    "S-Bahn" -> selectedTransportType = Labels.S_TRAIN
+                    "U-Bahn" -> selectedTransportType = Labels.SUBWAY
+                }
+                writeLabelToSharedPref(selectedTransportType)
+                dismissPopup()
+            }
+        })
+
+        // return a PopupWindow Object which can be shown
+        return PopupWindow(
+            view,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    /**
+     * Method in which the available vehicle types for the vehicle selection dialogue are defined.
+     * Each Item consists of a String type name and vector graphic according to the vehicle type.
+     * This is not to be confused with the actual label objects
+     *
+     * @return List of FilterItems with all available transport types
+     */
+    private fun getFilterItems() : List<FilterItem> {
+
+        val filterItemList = mutableListOf<FilterItem>()
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "Bahn"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
+        filterItemList.add(FilterItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
+
+        return filterItemList
+    }
+
+    /**
+     * Method to close the currently open Popup window and reset it / just reset it if it is not
+     * open currently, to update all contents and to close it after selecting an item by calling
+     * the method in the PopupWindows click listener
+     */
+    private fun dismissPopup() {
+        filterPopup?.let {
+            if(it.isShowing){
+                it.dismiss()
+            }
+            filterPopup = null
+        }
     }
 
     override fun onDestroyView() {
@@ -436,88 +600,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
-    }
-
-    private fun showAlertFilter(): PopupWindow {
-        var selectedTransportType = Labels.WALK
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(
-            R.layout.vehicle_selector,
-            rootView,
-            false
-        )
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
-        )
-
-        val adapter = AlertFilterAdapter(requireContext())
-        adapter.addAlertFilter(getFilterItems())
-
-        recyclerView.adapter = adapter
-        adapter.selectedItem(selectedItem)
-
-        adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
-            override fun onItemClick(view: View, position: Int, item: FilterItem) {
-                selectedItem = position
-                Timber.d("Label: data = ${item.name}")
-                when(item.name) {
-                    "Fuß (gehen)" -> selectedTransportType = Labels.WALK
-                    "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
-                    "Fahrrad" -> selectedTransportType = Labels.BIKE
-                    "E-Bike" -> selectedTransportType = Labels.E_BIKE
-                    "E-Roller" -> selectedTransportType = Labels.E_SCOOTER
-                    "Auto (Konventionell)" -> selectedTransportType = Labels.CAR
-                    "Auto (Elektrisch)" -> selectedTransportType = Labels.ELECTRIC_CAR
-                    "Auto (Hybrid)" -> selectedTransportType = Labels.HYBRID_CAR
-                    "Bus" -> selectedTransportType = Labels.BUS
-                    "Bahn" -> selectedTransportType = Labels.TRAIN
-                    "S-Bahn" -> selectedTransportType = Labels.S_TRAIN
-                    "U-Bahn" -> selectedTransportType = Labels.SUBWAY
-                }
-                writeLabelToSharedPref(selectedTransportType)
-                dismissPopup()
-            }
-        })
-
-        return PopupWindow(
-            view,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-    }
-
-    private fun getFilterItems() : List<FilterItem> {
-
-        val filterItemList = mutableListOf<FilterItem>()
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "Bahn"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
-
-        return filterItemList
-    }
-
-    private fun dismissPopup() {
-        filterPopup?.let {
-            if(it.isShowing){
-                it.dismiss()
-            }
-            filterPopup = null
-        }
-
     }
 
 }
