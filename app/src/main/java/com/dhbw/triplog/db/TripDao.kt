@@ -15,9 +15,6 @@ interface TripDao {
     @Query("SELECT * FROM trip_table ORDER BY timestamp DESC")
     fun getAllTripsSortedByDate(): LiveData<List<Trip>>
 
-    @Query("SELECT * FROM trip_table ORDER BY timeInMillis DESC")
-    fun getAllTripsSortedByTimeInMillis(): LiveData<List<Trip>>
-
     @Query("SELECT * FROM trip_table WHERE uploadStatus = 0")
     fun getAllTripsNotUploaded(): LiveData<List<Trip>>
 
