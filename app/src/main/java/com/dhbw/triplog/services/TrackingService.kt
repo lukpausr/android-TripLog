@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -31,7 +28,6 @@ import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
 import com.dhbw.triplog.other.Constants.SENSOR_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
-import com.dhbw.triplog.other.Constants.TRANSITION_RECEIVER_ACTION
 import com.dhbw.triplog.other.SensorDatapoint
 import com.dhbw.triplog.other.TrackingUtility
 import com.google.android.gms.location.*
@@ -53,7 +49,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
     @Inject
     lateinit var activityRecognitionClient: ActivityRecognitionClient
 
-    private lateinit var activityRecognitionPendingIntent : PendingIntent
+    // private lateinit var activityRecognitionPendingIntent : PendingIntent
 
     @Inject
     lateinit var baseNotificationBuilder: NotificationCompat.Builder
@@ -61,7 +57,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
     private lateinit var curNotificationBuilder: NotificationCompat.Builder
 
     private val tripTimeInSeconds = MutableLiveData<Long>()
-    private var lastActivity = ""
+    // private var lastActivity = ""
 
     /*
     SENSOR DATA
@@ -86,28 +82,26 @@ class TrackingService : LifecycleService(), SensorEventListener {
         super.onCreate()
         curNotificationBuilder = baseNotificationBuilder
 
-        Timber.d("TRACKING_SERVICE: Entering TrackingService OnCreate")
-
-        registerReceiver(activityReceiver, IntentFilter(TRANSITION_RECEIVER_ACTION))
+        /*registerReceiver(activityReceiver, IntentFilter(TRANSITION_RECEIVER_ACTION))
         activityRecognitionPendingIntent = PendingIntent.getBroadcast(
                 this,
                 1,
                 Intent(TRANSITION_RECEIVER_ACTION),
                 PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        )*/
 
         setupSensor()
 
         isTracking.observe(this, Observer {
             Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
-            registerForActivityUpdates(it)
+            // registerForActivityUpdates(it)
         })
 
-        activityUpdates.observe(this, Observer {
+        /*activityUpdates.observe(this, Observer {
             //updateNotificationState(isTracking.value!!)
             activityChanged(it)
-        })
+        })*/
 
 
 
@@ -135,7 +129,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
     }
 
     private fun stopService() {
-        unregisterReceiver(activityReceiver)
+        // unregisterReceiver(activityReceiver)
         unregisterSensors()
         pauseService()
         stopForeground(true)
@@ -236,7 +230,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
-    private fun registerForActivityUpdates(isTracking: Boolean) {
+/*    private fun registerForActivityUpdates(isTracking: Boolean) {
         if(isTracking) {
             Timber.d("TRACKING_SERVICE: Register for Activity Updates")
             val transitions = TrackingUtility.getTransitionsToObserve()
@@ -260,9 +254,9 @@ class TrackingService : LifecycleService(), SensorEventListener {
             activityRecognitionClient.removeActivityUpdates(activityRecognitionPendingIntent)
         }
 
-    }
+    }*/
 
-    private val activityReceiver = object : BroadcastReceiver() {
+/*    private val activityReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Timber.d("TRACKING_SERVICE: Entered onReceive")
             if(ActivityTransitionResult.hasResult(intent)) {
@@ -279,15 +273,15 @@ class TrackingService : LifecycleService(), SensorEventListener {
                 Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity}")
             }
         }
-    }
+    }*/
 
-    private fun activityChanged(curActivity: String) {
+/*    private fun activityChanged(curActivity: String) {
         if(lastActivity != curActivity) {
             isTimerEnabled = false
             lastActivity = curActivity
             startTimer()
         }
-    }
+    }*/
 
     private var timeStarted = 0L
     private var tripTime = 0L
@@ -332,24 +326,36 @@ class TrackingService : LifecycleService(), SensorEventListener {
 
     private fun startForegroundService() {
         isTracking.postValue(true)
+
+        startTimer()
+
         // Get Notification Manager
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
                 as NotificationManager
+
         // Create NotificationChannel if Android Version = 8+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }
+
         // Start Foreground Service
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
 
         tripTimeInSeconds.observe(this, Observer {
             if(isTracking.value!!) {
-                val notification = curNotificationBuilder
+             /*val notification = curNotificationBuilder
                         .setStyle(NotificationCompat.BigTextStyle().bigText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}"))
                         .setContentText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
+                notificationManager.notify(NOTIFICATION_ID, notification.build())*/
+                val notification = curNotificationBuilder
+                        .setStyle(NotificationCompat
+                            .BigTextStyle()
+                            .bigText("Recording\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}"))
+                        .setContentText("Recording\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
                 notificationManager.notify(NOTIFICATION_ID, notification.build())
             }
         })
+
         gpsPoints.observe(this, Observer {
             allGpsPoints.add(it)
         })
