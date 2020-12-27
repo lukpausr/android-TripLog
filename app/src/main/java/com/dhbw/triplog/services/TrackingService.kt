@@ -37,76 +37,72 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * TrackingService class, used for running the GPS and Sensor data collection as foreground
+ * activity
+ *
+ * @property fusedLocationProviderClient Google Fused Location API
+ * @property sensorManager Android Sensor Manager
+ * @property baseNotificationBuilder NotificationBuilder
+ * @property curNotificationBuilder Second NotificationBuilder, being used for updates
+ * @property tripTimeInSeconds Total trip time in seconds for the current recording
+ */
 @AndroidEntryPoint
 class TrackingService : LifecycleService(), SensorEventListener {
 
-    /*
-    GPS DATA
+    /**
+     * Variables being used for GPS Tracking
      */
     @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    @Inject
-    lateinit var activityRecognitionClient: ActivityRecognitionClient
-
-    // private lateinit var activityRecognitionPendingIntent : PendingIntent
-
-    @Inject
-    lateinit var baseNotificationBuilder: NotificationCompat.Builder
-
-    private lateinit var curNotificationBuilder: NotificationCompat.Builder
-
-    private val tripTimeInSeconds = MutableLiveData<Long>()
-    // private var lastActivity = ""
-
-    /*
-    SENSOR DATA
+    /**
+     * Variables being used for Sensor Data Tracking
      */
     private lateinit var sensorManager: SensorManager
 
+    /**
+     * Variables used for foreground activity
+     */
+    @Inject
+    lateinit var baseNotificationBuilder: NotificationCompat.Builder
+    private lateinit var curNotificationBuilder: NotificationCompat.Builder
+    private val tripTimeInSeconds = MutableLiveData<Long>()
 
     companion object {
+        // List with all GPS Points
         var allGpsPoints = mutableListOf<Location>()
-        // Mutable LiveData object to enable modification by user
+        // Mutable LiveData objects to enable modification by user and ability to Observe
         val tripTimeInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
-        val activityUpdates = MutableLiveData<String>()
         val gpsPoints = MutableLiveData<Location>()
-
+        // List of Sensor Data Objects
         val accelerometerData = mutableListOf<SensorDatapoint>()
         val linearAccelerometerData = mutableListOf<SensorDatapoint>()
         val gyroscopeData = mutableListOf<SensorDatapoint>()
     }
 
+    /**
+     * Being used to setup the sensor and to observe MutableLiveData isTracking,
+     * controlling if the Location is currently being tracked when the TrackingService is
+     * initially set up
+     */
     override fun onCreate() {
         super.onCreate()
         curNotificationBuilder = baseNotificationBuilder
-
-        /*registerReceiver(activityReceiver, IntentFilter(TRANSITION_RECEIVER_ACTION))
-        activityRecognitionPendingIntent = PendingIntent.getBroadcast(
-                this,
-                1,
-                Intent(TRANSITION_RECEIVER_ACTION),
-                PendingIntent.FLAG_UPDATE_CURRENT
-        )*/
 
         setupSensor()
 
         isTracking.observe(this, Observer {
             Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
-            // registerForActivityUpdates(it)
         })
-
-        /*activityUpdates.observe(this, Observer {
-            //updateNotificationState(isTracking.value!!)
-            activityChanged(it)
-        })*/
-
-
-
     }
 
+    /**
+     * Controls the Service class behaviour based on the
+     * received intent
+     */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when(it.action) {
@@ -128,8 +124,11 @@ class TrackingService : LifecycleService(), SensorEventListener {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    /**
+     * Stop service by unregistering the Sensors, pausing the service and stopping the
+     * foreground service and finally stopping the service itself
+     */
     private fun stopService() {
-        // unregisterReceiver(activityReceiver)
         unregisterSensors()
         pauseService()
         stopForeground(true)
@@ -230,59 +229,6 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
-/*    private fun registerForActivityUpdates(isTracking: Boolean) {
-        if(isTracking) {
-            Timber.d("TRACKING_SERVICE: Register for Activity Updates")
-            val transitions = TrackingUtility.getTransitionsToObserve()
-            val request = ActivityTransitionRequest(transitions)
-
-//            activityRecognitionClient.requestActivityTransitionUpdates(
-//                    request,
-//                    activityRecognitionPendingIntent
-//            )
-//                    .addOnSuccessListener { Timber.d("TRACKING_SERVICE: Activity Recognition successfully set up") }
-
-            activityRecognitionClient.requestActivityUpdates(
-                    0,
-                    activityRecognitionPendingIntent
-            )
-                    .addOnSuccessListener { Timber.d("TRACKING_SERVICE: Activity Update Request successfully set up") }
-
-        } else {
-            Timber.d("TRACKING_SERVICE: Deregister from Activity Updates")
-            activityRecognitionClient.removeActivityTransitionUpdates(activityRecognitionPendingIntent)
-            activityRecognitionClient.removeActivityUpdates(activityRecognitionPendingIntent)
-        }
-
-    }*/
-
-/*    private val activityReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Timber.d("TRACKING_SERVICE: Entered onReceive")
-            if(ActivityTransitionResult.hasResult(intent)) {
-                val result = ActivityTransitionResult.extractResult(intent)!!
-//                for (event in result.transitionEvents) {
-//                    Timber.d("TRACKING_SERVICE: Event received")
-//                }
-                activityUpdates.postValue(TrackingUtility.getActivityAsString(result))
-                Timber.d("TRACKING_SERVICE: ${TrackingUtility.getActivityAsString(result)}")
-            }
-            if(ActivityRecognitionResult.hasResult(intent)) {
-                val result = ActivityRecognitionResult.extractResult(intent)!!
-                activityUpdates.postValue(result.mostProbableActivity.toString())
-                Timber.d("TRACKING_SERVICE: ${result.mostProbableActivity}")
-            }
-        }
-    }*/
-
-/*    private fun activityChanged(curActivity: String) {
-        if(lastActivity != curActivity) {
-            isTimerEnabled = false
-            lastActivity = curActivity
-            startTimer()
-        }
-    }*/
-
     private var timeStarted = 0L
     private var tripTime = 0L
     private var lastSecondTimestamp = 0L
@@ -314,16 +260,6 @@ class TrackingService : LifecycleService(), SensorEventListener {
         }
     }
 
-    private fun updateNotificationState(isTracking: Boolean) {
-        val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (isTracking) {
-            curNotificationBuilder = baseNotificationBuilder
-                    .setContentText(activityUpdates.value?.toString())
-            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
-        }
-    }
-
     private fun startForegroundService() {
         isTracking.postValue(true)
 
@@ -343,10 +279,6 @@ class TrackingService : LifecycleService(), SensorEventListener {
 
         tripTimeInSeconds.observe(this, Observer {
             if(isTracking.value!!) {
-             /*val notification = curNotificationBuilder
-                        .setStyle(NotificationCompat.BigTextStyle().bigText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}"))
-                        .setContentText("${lastActivity}\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
-                notificationManager.notify(NOTIFICATION_ID, notification.build())*/
                 val notification = curNotificationBuilder
                         .setStyle(NotificationCompat
                             .BigTextStyle()
