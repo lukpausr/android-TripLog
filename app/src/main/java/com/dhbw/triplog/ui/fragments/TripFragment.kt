@@ -148,8 +148,6 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 refreshButtonColor()
             }
         })
-        TrackingService.activityUpdates.observe(viewLifecycleOwner, Observer {
-        })
     }
 
     /**
