@@ -33,6 +33,17 @@ allprojects {
     }
 }
 
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        configureEach {
+            moduleDisplayName = "data"
+            includeNonPublic = true
+            displayName = "JVM"
+            platform = "JVM"
+        }
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

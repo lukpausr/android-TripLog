@@ -1,6 +1,5 @@
 package com.dhbw.triplog.ui.fragments
 
-import android.bluetooth.BluetoothClass
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
@@ -15,12 +14,27 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_setup.*
 import javax.inject.Inject
 
+/**
+ * SetupFragment, showing a DSGVO Info Text to the user to agree to the collection of user data.
+ * With agreeing to the DSGVO, a unique user ID will be created to associate him anonymously with
+ * the data being uploaded to the Google Firebase Storage instance
+ *
+ * @property sharedPref Private key-value storage
+ */
 @AndroidEntryPoint
 class SetupFragment : Fragment(R.layout.fragment_setup) {
 
     @Inject
     lateinit var sharedPref: SharedPreferences
 
+    /**
+     * Being called when the View is created. Is forwarding the user to the tripFragment if
+     * the DSGVO information was already accepted. Is setting up the Accept/Decline Buttons for the
+     * DSGVO agreement.
+     *
+     * @param view
+     * @param savedInstanceState
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,10 +60,13 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
                     .setAnchorView(tvAccept)
                     .show()
         }
+
     }
 
+    /**
+     * Is used to store the agreement of the DSGVO in the persistent SharedPreferences Storage
+     */
     private fun writeDSGVOAcceptedToSharedPref() {
         sharedPref.edit().putBoolean(KEY_DSGVO, true).apply()
     }
-
 }

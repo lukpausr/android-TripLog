@@ -44,6 +44,20 @@ import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * TripFragment, being used for starting and stopping trip record session as well as for vehicle
+ * selection to label the different trips before starting them.
+ * With this way, labeling can be ensured.
+ *
+ * @property sharedPref Private key-value storage
+ * @property viewModel Connection between Repository and View
+ * @property isTracking Information about the current Tracking State, updated by TrackingService
+ * @property gpsPoints List of all gpsPoints of the current recording session
+ * @property gpsPointsLatLng List of all gpsPoints of the current recording session in LatLng format
+ * @property map GoogleMaps Instance
+ * @property filterPopup Popup window for vehicle selection
+ * @property selectedItem Currently selected Vehicle
+ */
 @AndroidEntryPoint
 class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.PermissionCallbacks {
 
@@ -61,6 +75,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private var filterPopup: PopupWindow? = null
     private var selectedItem: Int = -1
 
+    /**
+     * Being called when the View is created. Checks if all permissions are granted, subscribes to
+     * observers, is setting up click listeners for the different buttons and is creating a
+     * Google Maps instance
+     *
+     * @param view
+     * @param savedInstanceState
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView.onCreate(savedInstanceState)
@@ -105,12 +127,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    /*
-    Subscribe to data changes in the LiveData Objects of the Tracking Service
-    The current Tracking State is being used to update all UI Elements on a change, while the
-    GPS Points are being used to update the map element
-    The Activity Updates are currently unused but can be used to interact with the Google
-    Activity Recognition API
+    /**
+     * Subscribe to data changes in the LiveData Objects of the Tracking Service
+     * The current Tracking State is being used to update all UI Elements on a change, while the
+     * GPS Points are being used to update the map element
+     * The Activity Updates are currently unused but can be used to interact with the Google
+     * Activity Recognition API
      */
     private fun subscribeToObservers() {
         TrackingService.gpsPoints.observe(viewLifecycleOwner, Observer {
@@ -130,9 +152,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         })
     }
 
-    /*
-    Refreshes the Tracking State Annotation in the top right corner to display
-    whether the app is currently tracking your trip or not
+    /**
+     * Refreshes the Tracking State Annotation in the top right corner to display
+     * whether the app is currently tracking your trip or not
      */
     private fun refreshTvTrackingState() {
         if(isTracking) {
@@ -142,9 +164,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
     }
 
-    /*
-    Refreshes the Color of the "Start / Stop - Recording" Buttons depending on the
-    current tracking state
+    /**
+     * Refreshes the Color of the "Start / Stop - Recording" Buttons depending on the
+     * current tracking state
      */
     private fun refreshButtonColor() {
         if(isTracking) {

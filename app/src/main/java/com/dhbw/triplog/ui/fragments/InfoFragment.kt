@@ -5,15 +5,12 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dhbw.triplog.R
 import com.dhbw.triplog.adapters.TripAdapter
@@ -23,7 +20,6 @@ import com.dhbw.triplog.other.DeviceRandomUUID
 import com.dhbw.triplog.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_info.*
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -32,6 +28,12 @@ import javax.inject.Inject
  *
  * This class is being used for enabling the user to upload his trips to the Google Firebase
  * Storage and to see his recent trips
+ *
+ * @property viewModel
+ * @property tripAdapter
+ * @property sharedPref Private key-value storage
+ * @property tripsNotUploaded List which will contain all not yet uploaded trips according to a
+ * DB query
  */
 @AndroidEntryPoint
 class InfoFragment : Fragment(R.layout.fragment_info) {
@@ -45,7 +47,10 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
     private var tripsNotUploaded: List<Trip> = emptyList()
 
     /**
-     *
+     * Being called when the View is created. Is setting up the RecyclerView as well as a click
+     * Listener for the Upload button. Observes DB Data.
+     * @param view
+     * @param savedInstanceState
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,14 +76,25 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         }
     }
 
+    /**
+     * Being called by "onViewCreated". Sets up the RecyclerView to show all trips currently
+     * saved in the DB in the rvTrips UI Element
+     */
     private fun setupRecyclerView() = rvTrips.apply {
         tripAdapter = TripAdapter()
         adapter = tripAdapter
         layoutManager = LinearLayoutManager(requireContext())
     }
 
+    /**
+     * Being called when the button btnUpload is being pressed. Uploads all trips (Sensor + GPS
+     * Data) to the Google Firebase Storage container
+     */
     private fun uploadAllTrips() {
+        // Get the Random Unique User ID out of sharedPreferences
         val ruuid = DeviceRandomUUID.getRUUID(sharedPref)
+        // Upload all Data to the Cloud, annotated with the User ID for encrypted
+        // User Identification
         for(trip in tripsNotUploaded) {
             Timber.d("GPS: ${trip.fileNameGPS} + SENSOR: ${trip.fileNameSensor}")
             trip.fileNameGPS?.let { DataUtility.uploadFileToFirebase(it, ruuid) }
@@ -87,10 +103,13 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         }
     }
 
-    /*
-    Adapted and modified:
-    https://stackoverflow.com/a/57237708
-    https://stackoverflow.com/a/43444380
+    /**
+     * Check if the Device is online to prevent uploads without internet connection
+     * This function is an adapted and modified Stackoverflow solution:
+     * https://stackoverflow.com/a/57237708
+     * https://stackoverflow.com/a/43444380
+     * @param context the current Context (Context, the fragment is associated with)
+     * @return Returns true if there is internet connection, false if not
      */
     private fun isOnline(context: Context): Boolean {
         val connectivityManager =
