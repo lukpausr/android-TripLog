@@ -8,7 +8,6 @@ apply plugin: 'com.google.gms.google-services'
 
 apply plugin: 'org.jetbrains.dokka'
 
-
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
@@ -39,19 +38,6 @@ android {
         jvmTarget = '1.8'
     }
 
-}
-
-dokka {
-    outputFormat = 'html' // use 'javadoc' to get standard java docs
-    outputDirectory = "$buildDir/javadoc"
-
-    configuration {
-        includeNonPublic = false
-        skipEmptyPackages = true
-        skipDeprecated = true
-        reportUndocumented = true
-        jdkVersion = 8
-    }
 }
 
 dependencies {

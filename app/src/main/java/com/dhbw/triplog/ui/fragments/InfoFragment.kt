@@ -27,6 +27,12 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * InfoFragment, enabling the user to view his trips and upload them
+ *
+ * This class is being used for enabling the user to upload his trips to the Google Firebase
+ * Storage and to see his recent trips
+ */
 @AndroidEntryPoint
 class InfoFragment : Fragment(R.layout.fragment_info) {
 
@@ -38,6 +44,9 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
 
     private var tripsNotUploaded: List<Trip> = emptyList()
 
+    /**
+     *
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
@@ -60,7 +69,6 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
                 ).show()
             }
         }
-
     }
 
     private fun setupRecyclerView() = rvTrips.apply {
