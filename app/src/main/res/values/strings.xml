@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">DHBW - TripLog</string>
-    <string name="Home">Home</string>
-    <string name="Map">Map</string>
-    <string name="Settings">Settings</string>
+
+    <string name="UPLOAD">Upload</string>
+    <string name="TRIPS">Trips</string>
+    <string name="SETTINGS">Settings &amp; FAQ</string>
 
     <string name="TRACKING_ACTIVE">Tracking active</string>
     <string name="TRACKING_INACTIVE">Tracking inactive</string>
-
-
 </resources>
