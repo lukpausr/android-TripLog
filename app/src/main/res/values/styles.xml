@@ -8,8 +8,6 @@
         <item name="colorPrimary">@color/dhbw_red</item>
         <item name="colorSecondary">@color/dhbw_grey</item>
 
-
-
         <item name="android:colorBackground">@color/white</item>
         <item name="colorError">@color/errorColor</item>
 
@@ -27,6 +25,7 @@
         <item name="colorOnSurface">@android:color/white</item>
 
         <item name="scrimBackground">@color/mtrl_scrim_color</item>
+
         <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
         <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
         <item name="textAppearanceHeadline3">@style/TextAppearance.MaterialComponents.Headline3</item>
@@ -55,11 +54,11 @@
     </style>
 
     <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/dhbw_red</item>
     </style>
 
     <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/dhbw_red</item>
     </style>
 
 </resources>
