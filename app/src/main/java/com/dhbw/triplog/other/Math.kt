@@ -6,16 +6,16 @@ package com.dhbw.triplog.other
 object Math {
 
     /**
-     * Used to determine the maximum of three numbers
+     * Used to determine the minimum of three numbers
      *
      * @param a Value a
      * @param b Value b
      * @param c Value c
      *
-     * @return Maximum value of a, b and c
+     * @return Minimum value of a, b and c
      */
-    fun max(a: Int, b: Int, c: Int) : Int{
-        val temp = kotlin.math.max(a, b)
-        return kotlin.math.max(temp, c)
+    fun min(a: Int, b: Int, c: Int) : Int{
+        val temp = kotlin.math.min(a, b)
+        return kotlin.math.min(temp, c)
     }
 }

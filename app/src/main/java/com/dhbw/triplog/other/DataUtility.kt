@@ -112,7 +112,7 @@ object DataUtility {
         // DEBUG MESSAGE Timber.d("$accelerometerData")
 
         // Determine how many rows have to be written
-        val numberOfElements = Math.max(accelerometerData.size, linearAccelerometerData.size, gyroscopeData.size)
+        val numberOfElements = Math.min(accelerometerData.size, linearAccelerometerData.size, gyroscopeData.size)
 
         csvWriter().open("$filePath.csv") {
             writeRow(
