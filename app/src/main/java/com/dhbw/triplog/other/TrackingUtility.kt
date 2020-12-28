@@ -10,7 +10,7 @@ import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 
 /**
- * Static class like implementation of different Utility Function regarding the Tracking Service
+ * Static class like implementation of different Utility methods regarding the Tracking Service
  */
 object TrackingUtility {
 
@@ -35,6 +35,14 @@ object TrackingUtility {
                 )
             }
 
+    /**
+     * Formats a given time in ms to a easily readable stopwatch format
+     *
+     * @param ms Time in Milliseconds
+     * @param includeMillis Define, if Milliseconds should be included in the formatted Time or not
+     *
+     * @return String containing the formatted time in hh:mm:ss(:xx)
+     */
     fun getFormattedStopWatchTime(ms: Long, includeMillis: Boolean = false): String {
         var milliseconds = ms
         val hours = TimeUnit.MILLISECONDS.toHours(milliseconds)
@@ -54,5 +62,4 @@ object TrackingUtility {
                 "${if(seconds < 10) "0" else ""}$seconds:" +
                 "${if(milliseconds < 10) "0" else ""}$milliseconds"
     }
-
 }

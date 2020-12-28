@@ -2,17 +2,20 @@ package com.dhbw.triplog.other
 
 import android.graphics.Color
 
+/**
+ * Constant class containing all relevant constants for the TripLog project
+ */
 object Constants {
+    // Database
     const val TRIP_DATABASE_NAME = "trip_db"
 
+    // Foreground Service Intent Messages
     const val ACTION_START_RESUME_SERVICE = "ACTION_START_RESUME_SERVICE"
     const val ACTION_PAUSE_SERVICE = "ACTION_PAUSE_SERVICE"
     const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
 
+    // Navigation Custom Back Stack Root Tag to forbid navigation back to the setup fragment
     const val BACK_STACK_ROOT_TAG = "HomeFragment"
-
-    // Random Unique User ID
-    const val DEVICE_ID = "DEVICE_ID"
 
     // Foreground Service Intent
     const val ACTION_SHOW_TRIP_FRAGMENT = "ACTION_SHOW_TRIP_FRAGMENT"
@@ -51,4 +54,6 @@ object Constants {
     const val KEY_DSGVO = "KEY_DSGVO"
     const val KEY_SELECTED_LABEL = "KEY_SELECTED_LABEL"
 
+    // Random Unique User ID
+    const val DEVICE_ID = "DEVICE_ID"
 }
