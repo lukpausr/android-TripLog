@@ -18,8 +18,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.dhbw.triplog.R
-import com.dhbw.triplog.adapters.AlertFilterAdapter
-import com.dhbw.triplog.adapters.RecyclerviewCallbacks
+import com.dhbw.triplog.adapters.VehicleSelectionAdapter
+import com.dhbw.triplog.adapters.RecyclerViewCallback
+import com.dhbw.triplog.adapters.VehicleItem
 import com.dhbw.triplog.db.Trip
 import com.dhbw.triplog.other.*
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
@@ -477,7 +478,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             false
         )
         // Create a reference to the RecyclerView in vehicle_selector.xml
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rvVehicleSelection)
         recyclerView.addItemDecoration(
             DividerItemDecoration(
                 recyclerView.context,
@@ -485,18 +486,18 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
         )
 
-        // Create a reference to the AlertFilterAdapter, required for filling the
+        // Create a reference to the VehicleSelectionAdapter, required for filling the
         // recycler view with content
-        val adapter = AlertFilterAdapter(requireContext())
+        val adapter = VehicleSelectionAdapter(requireContext())
         // Insert the different vehicle selection items (Filter Items) into the adapter
-        adapter.addAlertFilter(getFilterItems())
+        adapter.addVehicle(getFilterItems())
 
         recyclerView.adapter = adapter
         adapter.selectedItem(selectedItem)
 
         // Set a onClickListener on the adapter to identify clicks on specific items
-        adapter.setOnClick(object : RecyclerviewCallbacks<FilterItem> {
-            override fun onItemClick(view: View, position: Int, item: FilterItem) {
+        adapter.setOnClick(object : RecyclerViewCallback<VehicleItem> {
+            override fun onItemClicked(view: View, position: Int, item: VehicleItem) {
                 selectedItem = position
                 Timber.d("Label: data = ${item.name}")
                 when(item.name) {
@@ -533,21 +534,21 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      *
      * @return List of FilterItems with all available transport types
      */
-    private fun getFilterItems() : List<FilterItem> {
+    private fun getFilterItems() : List<VehicleItem> {
 
-        val filterItemList = mutableListOf<FilterItem>()
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "Bahn"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
-        filterItemList.add(FilterItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
+        val filterItemList = mutableListOf<VehicleItem>()
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "Bahn"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
+        filterItemList.add(VehicleItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
 
         return filterItemList
     }

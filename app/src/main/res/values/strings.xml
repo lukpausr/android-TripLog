@@ -10,4 +10,6 @@
 
     <string name="UPLOAD_SUCCESSFUL">Uploaded</string>
     <string name="UPLOAD_NOT_SUCCESSFUL">Not Uploaded</string>
+
+    <string name="VECTOR_GRAPHIC">VECTOR_GRAPHIC</string>
 </resources>
