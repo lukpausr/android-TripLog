@@ -31,9 +31,6 @@ object Constants {
 
     // Sensor Update Interval uS
     const val SENSOR_UPDATE_INTERVAL = 10000
-    const val SENSOR_TYPE_ACCELEROMETER = "SENSOR_TYPE_ACCELEROMETER"
-    const val SENSOR_TYPE_LINEAR_ACCELEROMETER = "SENSOR_TYPE_LINEAR_ACCELEROMETER"
-    const val SENSOR_TYPE_GYROSCOPE = "SENSOR_TYPE_GYROSCOPE"
 
     // Map
     const val MAP_ZOOM = 15f
