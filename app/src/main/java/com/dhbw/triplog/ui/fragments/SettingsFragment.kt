@@ -40,10 +40,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
      * Returning the DSGVO Status, which is saved in shared Preferences as human readable String
      */
     private fun getDSGVOStatus() : String {
-        if(sharedPref.getBoolean(KEY_DSGVO, false)) {
-            return "Accepted"
+        return if(sharedPref.getBoolean(KEY_DSGVO, false)) {
+            "Accepted"
         } else {
-            return "Denied"
+            "Denied"
         }
     }
 }

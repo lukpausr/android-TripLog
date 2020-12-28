@@ -12,4 +12,9 @@
     <string name="UPLOAD_NOT_SUCCESSFUL">Not Uploaded</string>
 
     <string name="VECTOR_GRAPHIC">VECTOR_GRAPHIC</string>
+
+    <string name="USER_ID">User ID</string>
+    <string name="DSGVO_STATUS">DSGVO</string>
+    <string name="GITHUB_HEADER">Github (insight into data collection)</string>
+    <string name="GITHUB_LINK">https://github.com/lukpausr/android-TripLog</string>
 </resources>

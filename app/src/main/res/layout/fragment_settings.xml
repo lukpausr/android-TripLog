@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:text="Settings"
+        android:text="@string/SETTINGS"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tvUserIDHeader"
         app:layout_constraintRight_toRightOf="parent"
@@ -21,7 +21,7 @@
         android:id="@+id/tvUserIDHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User ID"
+        android:text="@string/USER_ID"
         android:textStyle="bold"
         android:layout_marginStart="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -32,7 +32,7 @@
         android:id="@+id/tvUserID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="USER_ID"
+        android:text="@string/USER_ID"
         android:layout_marginStart="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvUserIDHeader"/>
@@ -41,7 +41,7 @@
         android:id="@+id/tvDSGVOHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DSGVO"
+        android:text="@string/DSGVO_STATUS"
         android:textStyle="bold"
         android:layout_marginStart="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -52,9 +52,33 @@
         android:id="@+id/tvDSGVO"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DSGVO_ACCEPTED"
+        android:text="@string/DSGVO_STATUS"
         android:layout_marginStart="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDSGVOHeader"/>
+        app:layout_constraintTop_toBottomOf="@id/tvDSGVOHeader"
+        app:layout_constraintBottom_toTopOf="@id/tvGithubHeader"/>
+
+    <TextView
+        android:id="@+id/tvGithubHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/GITHUB_HEADER"
+        android:textStyle="bold"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDSGVO"
+        app:layout_constraintBottom_toTopOf="@id/tvGithub"/>
+
+    <TextView
+        android:id="@+id/tvGithub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/GITHUB_LINK"
+        android:autoLink="web"
+        android:layout_marginStart="10dp"
+        android:textColorLink="@color/dhbw_grey"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvGithubHeader"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
