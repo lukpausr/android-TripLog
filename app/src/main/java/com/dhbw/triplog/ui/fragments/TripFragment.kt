@@ -57,7 +57,7 @@ import javax.inject.Inject
  * @property gpsPointsLatLng List of all gpsPoints of the current recording session in LatLng format
  * @property map GoogleMaps Instance
  * @property filterPopup Popup window for vehicle selection
- * @property selectedItem Currently selected Vehicle
+ * @property selectedVehicle Currently selected Vehicle
  */
 @AndroidEntryPoint
 class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.PermissionCallbacks {
@@ -74,7 +74,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private var map: GoogleMap? = null
 
     private var filterPopup: PopupWindow? = null
-    private var selectedItem: Int = -1
+    private var selectedVehicle: Int = -1
 
     /**
      * Being called when the View is created. Checks if all permissions are granted, subscribes to
@@ -104,9 +104,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             )
         }
         btnStartRecord.setOnClickListener {
-            if(!isTracking && selectedItem != -1) {
+            if(!isTracking && selectedVehicle != -1) {
                 startTracking()
-            } else if (selectedItem == -1) {
+            } else if (selectedVehicle == -1) {
                 Toast.makeText(
                     context,
                     "Please select the transportation type first!",
@@ -218,7 +218,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         gpsPointsLatLng.clear()     // Clear the gpsPointsLatLng and gpsPoints
         gpsPoints.clear()           // array in preparation for next record
         map?.clear()                // Clear the map output
-        selectedItem = -1           // Set the currently selected vehicle to "undefined" to
+        selectedVehicle = -1           // Set the currently selected vehicle to "undefined" to
                                     // force the user to select it again before a new record
     }
 
@@ -477,6 +477,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             rootView,
             false
         )
+
         // Create a reference to the RecyclerView in vehicle_selector.xml
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvVehicleSelection)
         recyclerView.addItemDecoration(
@@ -490,15 +491,15 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         // recycler view with content
         val adapter = VehicleSelectionAdapter(requireContext())
         // Insert the different vehicle selection items (Filter Items) into the adapter
-        adapter.addVehicle(getFilterItems())
+        adapter.addVehicle(getVehicleItems())
 
         recyclerView.adapter = adapter
-        adapter.selectedItem(selectedItem)
+        adapter.selectedItem(selectedVehicle)
 
         // Set a onClickListener on the adapter to identify clicks on specific items
         adapter.setOnClick(object : RecyclerViewCallback<VehicleItem> {
             override fun onItemClicked(view: View, position: Int, item: VehicleItem) {
-                selectedItem = position
+                selectedVehicle = position
                 Timber.d("Label: data = ${item.name}")
                 when(item.name) {
                     "Fuß (gehen)" -> selectedTransportType = Labels.WALK
@@ -534,23 +535,23 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      *
      * @return List of FilterItems with all available transport types
      */
-    private fun getFilterItems() : List<VehicleItem> {
+    private fun getVehicleItems() : List<VehicleItem> {
 
-        val filterItemList = mutableListOf<VehicleItem>()
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "Bahn"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
-        filterItemList.add(VehicleItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
+        val vehicleItemList = mutableListOf<VehicleItem>()
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_directions_walk_24, "Fuß (gehen)"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_directions_run_24, "Fuß (Joggen)"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_pedal_bike_24, "Fahrrad"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_electric_bike_24, "E-Bike"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_electric_scooter_24, "E-Roller"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_directions_car_24, "Auto (Konventionell)"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Elektrisch)"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_electric_car_24, "Auto (Hybrid)"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_directions_bus_24, "Bus"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "Bahn"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_train_24, "S-Bahn"))
+        vehicleItemList.add(VehicleItem(R.drawable.ic_baseline_tram_24, "U-Bahn"))
 
-        return filterItemList
+        return vehicleItemList
     }
 
     /**
