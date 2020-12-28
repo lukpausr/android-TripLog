@@ -37,4 +37,24 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvUserIDHeader"/>
 
+    <TextView
+        android:id="@+id/tvDSGVOHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DSGVO"
+        android:textStyle="bold"
+        android:layout_marginStart="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvUserID"
+        app:layout_constraintBottom_toTopOf="@id/tvDSGVO"/>
+
+    <TextView
+        android:id="@+id/tvDSGVO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DSGVO_ACCEPTED"
+        android:layout_marginStart="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDSGVOHeader"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

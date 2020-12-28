@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.dhbw.triplog.R
+import com.dhbw.triplog.other.Constants
+import com.dhbw.triplog.other.Constants.KEY_DSGVO
 import com.dhbw.triplog.other.DeviceRandomUUID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_settings.*
@@ -31,5 +33,17 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvUserID.text = DeviceRandomUUID.getRUUID(sharedPref)
+        tvDSGVO.text = getDSGVOStatus()
+    }
+
+    /**
+     * Returning the DSGVO Status, which is saved in shared Preferences as human readable String
+     */
+    private fun getDSGVOStatus() : String {
+        if(sharedPref.getBoolean(KEY_DSGVO, false)) {
+            return "Accepted"
+        } else {
+            return "Denied"
+        }
     }
 }
