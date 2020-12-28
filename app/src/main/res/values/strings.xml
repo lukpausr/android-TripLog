@@ -17,4 +17,29 @@
     <string name="DSGVO_STATUS">DSGVO</string>
     <string name="GITHUB_HEADER">Github (insight into data collection)</string>
     <string name="GITHUB_LINK">https://github.com/lukpausr/android-TripLog</string>
+    <string name="EXPLAIN_HEADER_1">Studienarbeit der DHBW - Stuttgart</string>
+    <string name="EXPLAIN_HEADER_2">Eine kurze Erklärung:</string>
+    <string name="EXPLAIN_TEXT_1">
+        Als Nutzer dieser App tragen Sie zu einer Studienarbeit
+        der DHBW Stuttgart bei. Anhand der aufgenommenen Daten soll durch maschinelles Lernen
+        ("künstliche Intelligenz") ein Modell erstellt werden, welches Anhand eines
+        Bewegungsprofiles auf das genutzte Transportmittel schließen kann.
+    </string>
+    <string name="EXPLAIN_TEXT_2">
+        Deshalb ist es erforderlich, dass sich ein aufgezeichneter Trip immer nur auf
+        <b><u>ein</u></b> Verkehrsmittel bezieht. Die Aufnahme muss beim Wechsel des
+        Verkehrsmittels beendet und dann neu gestartet werden.
+    </string>
+    <string name="EXPLAIN_TEXT_3">
+        Zur Aufzeichnung eines Trips muss das GPS Ihres Handys aktiviert sein
+    </string>
+    <string name="EXPLAIN_HEADER_STEP_1">Trip aufzeichnen:</string>
+    <string name="EXPLAIN_STEP_1">
+        1. wähle Transportmittel (Transport Type)\n2. Starte die Aufnahme
+        (Start Recording)\n3. Stoppe die Aufnahme (Stop Recording)
+    </string>
+    <string name="EXPLAIN_HEADER_STEP_2">Trip hochladen:</string>
+    <string name="EXPLAIN_STEP_2">
+        1. wähle Menüpunkt "Upload"\n2. Hochladen mit Upload
+    </string>
 </resources>
