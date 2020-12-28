@@ -7,4 +7,7 @@
 
     <string name="TRACKING_ACTIVE">Tracking active</string>
     <string name="TRACKING_INACTIVE">Tracking inactive</string>
+
+    <string name="UPLOAD_SUCCESSFUL">Uploaded</string>
+    <string name="UPLOAD_NOT_SUCCESSFUL">Not Uploaded</string>
 </resources>

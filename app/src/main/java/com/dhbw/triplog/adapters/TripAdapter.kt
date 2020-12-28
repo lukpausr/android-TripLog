@@ -1,6 +1,5 @@
 package com.dhbw.triplog.adapters
 
-import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,10 +55,10 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
             tvLabel.text = trip.label?.let { DataUtility.retrieveLabelFromJSON(it).label }
 
             if(trip.uploadStatus) {
-                tvUpload.text = "Uploaded"
+                tvUpload.text = resources.getString(R.string.UPLOAD_SUCCESSFUL)
                 cvTrip.setBackgroundColor(ContextCompat.getColor(context, R.color.color_Uploaded))
             } else {
-                tvUpload.text = "Not Uploaded"
+                tvUpload.text = resources.getString(R.string.UPLOAD_NOT_SUCCESSFUL)
                 cvTrip.setBackgroundColor(ContextCompat.getColor(context, R.color.color_notUploaded))
             }
         }
