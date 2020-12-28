@@ -1,7 +1,10 @@
 package com.dhbw.triplog.ui.fragments
 
 import android.Manifest
+import android.app.Activity
+import android.app.PendingIntent
 import android.content.Intent
+import android.content.IntentSender
 import android.content.SharedPreferences
 import android.location.Location
 import android.os.Build
@@ -18,20 +21,27 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.dhbw.triplog.R
-import com.dhbw.triplog.adapters.VehicleSelectionAdapter
 import com.dhbw.triplog.adapters.RecyclerViewCallback
 import com.dhbw.triplog.adapters.VehicleItem
+import com.dhbw.triplog.adapters.VehicleSelectionAdapter
 import com.dhbw.triplog.db.Trip
-import com.dhbw.triplog.other.*
 import com.dhbw.triplog.other.Constants.ACTION_START_RESUME_SERVICE
 import com.dhbw.triplog.other.Constants.ACTION_STOP_SERVICE
 import com.dhbw.triplog.other.Constants.KEY_SELECTED_LABEL
+import com.dhbw.triplog.other.Constants.LOCATION_SETTING_REQUEST
 import com.dhbw.triplog.other.Constants.MAP_ZOOM
 import com.dhbw.triplog.other.Constants.POLYLINE_COLOR
 import com.dhbw.triplog.other.Constants.POLYLINE_WIDTH
 import com.dhbw.triplog.other.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import com.dhbw.triplog.other.DataUtility
+import com.dhbw.triplog.other.Labels
+import com.dhbw.triplog.other.TrackingUtility
 import com.dhbw.triplog.services.TrackingService
 import com.dhbw.triplog.ui.viewmodels.MainViewModel
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -44,6 +54,7 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
 import javax.inject.Inject
+
 
 /**
  * TripFragment, being used for starting and stopping trip record session as well as for vehicle
@@ -97,20 +108,20 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             filterPopup?.isOutsideTouchable = true
             filterPopup?.isFocusable = true
             filterPopup?.showAsDropDown(
-                btnVehicleSelection,
-                0,
-                0,
-                Gravity.BOTTOM
+                    btnVehicleSelection,
+                    0,
+                    0,
+                    Gravity.BOTTOM
             )
         }
         btnStartRecord.setOnClickListener {
             if(!isTracking && selectedVehicle != -1) {
-                startTracking()
+                enableLocation()
             } else if (selectedVehicle == -1) {
                 Toast.makeText(
-                    context,
-                    "Please select the transportation type first!",
-                    Toast.LENGTH_LONG
+                        context,
+                        "Please select the transportation type first!",
+                        Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -143,7 +154,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             moveCameraToUser()
         })
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
-            if(isTracking != it) {
+            if (isTracking != it) {
                 isTracking = it
                 refreshTvTrackingState()
                 refreshButtonColor()
@@ -172,18 +183,18 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 activity?.resources?.let { it ->
                     btnStartRecord.setBackgroundColor(
-                        it.getColor(
-                            R.color.dhbw_grey,
-                            requireActivity().theme
-                        )
+                            it.getColor(
+                                    R.color.dhbw_grey,
+                                    requireActivity().theme
+                            )
                     )
                 }
                 activity?.resources?.let { it ->
                     btnStopRecord.setBackgroundColor(
-                        it.getColor(
-                            R.color.dhbw_red,
-                            requireActivity().theme
-                        )
+                            it.getColor(
+                                    R.color.dhbw_red,
+                                    requireActivity().theme
+                            )
                     )
                 }
             }
@@ -191,18 +202,18 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 activity?.resources?.let { it ->
                     btnStartRecord.setBackgroundColor(
-                        it.getColor(
-                            R.color.dhbw_red,
-                            requireActivity().theme
-                        )
+                            it.getColor(
+                                    R.color.dhbw_red,
+                                    requireActivity().theme
+                            )
                     )
                 }
                 activity?.resources?.let { it ->
                     btnStopRecord.setBackgroundColor(
-                        it.getColor(
-                            R.color.dhbw_grey,
-                            requireActivity().theme
-                        )
+                            it.getColor(
+                                    R.color.dhbw_grey,
+                                    requireActivity().theme
+                            )
                     )
                 }
             }
@@ -236,7 +247,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      *
      * @param label Currently selected label
      */
-    private fun writeLabelToSharedPref(label : Labels) {
+    private fun writeLabelToSharedPref(label: Labels) {
         val json = DataUtility.convertLabelToJSON(label)
         sharedPref.edit().putString(KEY_SELECTED_LABEL, json).apply()
     }
@@ -268,9 +279,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             val label = getLabelFromSharedPref()
             val timestamp = System.currentTimeMillis()
             val path = DataUtility.getPathAndFilename(
-                requireContext(),
-                label,
-                timestamp
+                    requireContext(),
+                    label,
+                    timestamp
             )
 
             // Debugging: View all recorded GPS Points in console
@@ -294,14 +305,14 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             // the label as well as both .csv paths. The UploadStatus is set to 'false' because
             // the files are not being uploaded yet.
             val trip = Trip(
-                bitmap,
-                timestamp,
-                TrackingService.tripTimeInMillis.value!!,
-                DataUtility.getFormattedDate(timestamp),
-                DataUtility.convertLabelToJSON(label),
-                csvPathGPS,
-                csvPathSensor,
-                false
+                    bitmap,
+                    timestamp,
+                    TrackingService.tripTimeInMillis.value!!,
+                    DataUtility.getFormattedDate(timestamp),
+                    DataUtility.convertLabelToJSON(label),
+                    csvPathGPS,
+                    csvPathSensor,
+                    false
             )
             viewModel.insertTrip(trip)
 
@@ -317,10 +328,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun moveCameraToUser() {
         if(gpsPoints.isNotEmpty()) {
             map?.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    DataUtility.locationToLatLng(gpsPoints.last()),
-                    MAP_ZOOM
-                )
+                    CameraUpdateFactory.newLatLngZoom(
+                            DataUtility.locationToLatLng(gpsPoints.last()),
+                            MAP_ZOOM
+                    )
             )
         }
     }
@@ -334,12 +345,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             bounds.include(DataUtility.locationToLatLng(point))
         }
         map?.moveCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                bounds.build(),
-                mapView.width,
-                mapView.height,
-                (mapView.height * 0.05f).toInt()
-            )
+                CameraUpdateFactory.newLatLngBounds(
+                        bounds.build(),
+                        mapView.width,
+                        mapView.height,
+                        (mapView.height * 0.05f).toInt()
+                )
         )
     }
 
@@ -391,6 +402,50 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             }
 
     /**
+     * Force the user to enable his Location service before calling startTracking(). If location
+     * Services are enabled tracking is automatically started. If not, the user has to press
+     * 'Start Recording' again.
+     * This solution is heavily influenced by:
+     * For more detailed information see:
+     * https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+     * https://stackoverflow.com/a/31816683
+     */
+    private fun enableLocation() {
+        activity?.let {
+            val locationRequest = LocationRequest.create()
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+
+            val builder = LocationSettingsRequest.Builder()
+                    .addLocationRequest(locationRequest)
+
+            val task = LocationServices.getSettingsClient(it)
+                    .checkLocationSettings(builder.build())
+
+            task.addOnSuccessListener { response ->
+                val states = response.locationSettingsStates
+                if (states.isLocationPresent) {
+                    startTracking()
+                }
+            }
+
+            task.addOnFailureListener { e ->
+                if(e is ResolvableApiException) {
+                    try {
+                        it.startIntentSenderForResult(
+                                e.resolution.intentSender,
+                                LOCATION_SETTING_REQUEST,
+                                null,
+                                0,
+                                0,
+                                0,
+                                null)
+                    } catch (sendEx: IntentSender.SendIntentException) { }
+                }
+            }
+        }
+    }
+
+    /**
      * Requesting user permissions for GPS Tracking via EasyPermissions by calling the
      * requestPermissions method.
      * Depending on the used Android Version, different permission requests apply to the user
@@ -402,20 +457,20 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app.",
-                REQUEST_CODE_LOCATION_PERMISSION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                    this,
+                    "You need to accept location permissions to use this app.",
+                    REQUEST_CODE_LOCATION_PERMISSION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
             )
         } else {
             EasyPermissions.requestPermissions(
-                this,
-                "You need to accept location permissions to use this app.",
-                REQUEST_CODE_LOCATION_PERMISSION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    this,
+                    "You need to accept location permissions to use this app.",
+                    REQUEST_CODE_LOCATION_PERMISSION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
         }
     }
@@ -454,9 +509,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      * @param grantResults
      */
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
@@ -473,18 +528,18 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         var selectedTransportType = Labels.WALK
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(
-            R.layout.vehicle_selector,
-            rootView,
-            false
+                R.layout.vehicle_selector,
+                rootView,
+                false
         )
 
         // Create a reference to the RecyclerView in vehicle_selector.xml
         val recyclerView = view.findViewById<RecyclerView>(R.id.rvVehicleSelection)
         recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                recyclerView.context,
-                DividerItemDecoration.VERTICAL
-            )
+                DividerItemDecoration(
+                        recyclerView.context,
+                        DividerItemDecoration.VERTICAL
+                )
         )
 
         // Create a reference to the VehicleSelectionAdapter, required for filling the
@@ -501,7 +556,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             override fun onItemClicked(view: View, position: Int, item: VehicleItem) {
                 selectedVehicle = position
                 Timber.d("Label: data = ${item.name}")
-                when(item.name) {
+                when (item.name) {
                     "Fuß (gehen)" -> selectedTransportType = Labels.WALK
                     "Fuß (Joggen)" -> selectedTransportType = Labels.RUN
                     "Fahrrad" -> selectedTransportType = Labels.BIKE
@@ -522,9 +577,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
 
         // return a PopupWindow Object which can be shown
         return PopupWindow(
-            view,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+                view,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
 
