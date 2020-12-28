@@ -9,8 +9,14 @@ import com.google.android.gms.location.DetectedActivity
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 
+/**
+ * Static class like implementation of different Utility Function regarding the Tracking Service
+ */
 object TrackingUtility {
 
+    /**
+     * Check if location permissions are currently being granted
+     */
     fun hasLocationPermissions(context: Context) =
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 EasyPermissions.hasPermissions(
