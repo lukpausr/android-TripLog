@@ -106,7 +106,7 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
     /**
      * Overridden getItemCount method which is returning the current number of elements
      *
-     * @return Current number of elements
+     * @return Current number of elements in list
      */
     override fun getItemCount(): Int {
         return differ.currentList.size
@@ -116,6 +116,9 @@ class TripAdapter : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
      * Being called by RecyclerView to associate a ViewHolder with data.
      * See: https://developer.android.com/guide/topics/ui/layout/recyclerview#implement-adapter
      * for detailed information
+     *
+     * @param holder
+     * @param position
      */
     override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
         val trip = differ.currentList[position]
