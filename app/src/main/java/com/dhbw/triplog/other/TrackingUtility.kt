@@ -35,46 +35,6 @@ object TrackingUtility {
                 )
             }
 
-    fun getActivityAsString(result : ActivityTransitionResult) : String {
-        var activity = ""
-        when (result.transitionEvents.last().activityType) {
-            0 -> activity = "IN_VEHICLE"
-            1 -> activity = "ON_BICYCLE"
-            2 -> activity = "ON_FOOT"
-            3 -> activity = "STILL"
-            4 -> activity = "UNKNOWN"
-            5 -> activity = "TILTING"
-            7 -> activity = "WALK"
-            8 -> activity = "RUN"
-        }
-        return activity
-    }
-
-    fun getTransitionsToObserve() : List<ActivityTransition> {
-        val transitions = mutableListOf<ActivityTransition>()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.STILL)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.ON_FOOT)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.ON_BICYCLE)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        transitions +=
-                ActivityTransition.Builder()
-                        .setActivityType(DetectedActivity.IN_VEHICLE)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-        return transitions.toList()
-    }
-
     fun getFormattedStopWatchTime(ms: Long, includeMillis: Boolean = false): String {
         var milliseconds = ms
         val hours = TimeUnit.MILLISECONDS.toHours(milliseconds)
