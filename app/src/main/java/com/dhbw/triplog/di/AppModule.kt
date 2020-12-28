@@ -18,6 +18,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ServiceScoped
 import javax.inject.Singleton
 
+/**
+ * Data Injection
+ */
 @Module
 @InstallIn(ApplicationComponent::class)
 object AppModule {
@@ -40,10 +43,4 @@ object AppModule {
     @Provides
     fun provideSharedPreferences(@ApplicationContext app: Context) =
             app.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
-
-    @Singleton
-    @Provides
-    fun provideDSGVOAccepted(sharedPref: SharedPreferences) =
-            sharedPref.getBoolean(KEY_DSGVO, false)
-
 }

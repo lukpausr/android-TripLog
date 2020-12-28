@@ -8,7 +8,6 @@ import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.dhbw.triplog.ui.MainActivity
-import com.google.android.gms.location.ActivityRecognitionClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import dagger.Module
 import dagger.Provides
@@ -17,6 +16,9 @@ import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ServiceScoped
 
+/**
+ * Data Injection
+ */
 @Module
 @InstallIn(ServiceComponent::class)
 object ServiceModule {
@@ -52,5 +54,4 @@ object ServiceModule {
             .setContentTitle("DHBW - TripLog")
             .setContentText("00:00:00")
             .setContentIntent(pendingIntent)
-
 }
