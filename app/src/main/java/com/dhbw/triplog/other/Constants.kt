@@ -35,9 +35,6 @@ object Constants {
     const val SENSOR_TYPE_LINEAR_ACCELEROMETER = "SENSOR_TYPE_LINEAR_ACCELEROMETER"
     const val SENSOR_TYPE_GYROSCOPE = "SENSOR_TYPE_GYROSCOPE"
 
-    // Activity Recognition
-    const val TRANSITION_RECEIVER_ACTION = "TRANSITION_RECEIVER_ACTION"
-
     // Map
     const val MAP_ZOOM = 15f
     const val POLYLINE_COLOR = Color.RED
