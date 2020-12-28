@@ -16,6 +16,8 @@ object TrackingUtility {
 
     /**
      * Check if location permissions are currently being granted
+     *
+     * @param context Current context
      */
     fun hasLocationPermissions(context: Context) =
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
