@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Navigate user directly to the Trip Fragment depending on the intent
-        navigateToTripFragmentIfNeeded(intent)
+        // navigateToTripFragmentIfNeeded(intent)
 
         setSupportActionBar(toolbar)
 
