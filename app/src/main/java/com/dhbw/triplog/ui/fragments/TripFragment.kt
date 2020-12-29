@@ -53,6 +53,7 @@ import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 
@@ -273,6 +274,12 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         // Screenshot the current map
         map?.snapshot { bitmap ->
 
+            val totalTrackingTime = TrackingService.tripTimeInMillis.value!!
+
+            // Calling the stop Tracking function to stop the service and to delete all data
+            // regarding the last recorded trip
+            stopTracking()
+
             // Collect important information: Currently selected label, Current time in Millis
             // The information is being used to create a unique path / filename for the
             // collected data
@@ -284,21 +291,17 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     timestamp
             )
 
-            // Debugging: View all recorded GPS Points in console
-            Timber.d("GPS_Points: $gpsPoints")
+            val sensorFile = File("${requireContext().filesDir}/temp_sensor.csv")
+            val gpsFile = File("${requireContext().filesDir}/temp_gps.csv")
 
-            // Writing the GPS Data to a .csv file and saving the files' path in csvPathGPS
-            val csvPathGPS = DataUtility.writeGPSDataToFile(
-                    path,
-                    gpsPoints
-            )
-            // Writing the Sensor Data to a .csv file and saving the files' path in csvPathSensor
-            val csvPathSensor = DataUtility.writeSensorDataToFile(
-                    path,
-                    TrackingService.accelerometerData,
-                    TrackingService.linearAccelerometerData,
-                    TrackingService.gyroscopeData
-            )
+            val sensorFileDestination = File("${path}_SENSOR.csv")
+            val gpsFileDestination = File("${path}_GPS.csv")
+
+            sensorFile.renameTo(sensorFileDestination)
+            gpsFile.renameTo(gpsFileDestination)
+
+            val csvPathGPS = "${path}_GPS.csv"
+            val csvPathSensor = "${path}_SENSOR.csv"
 
             // Creating a new Trip Object with: A screenshot of the map (bitmap), the timestamp,
             // the total recording time provided by the Tracking Service, the current Date,
@@ -307,18 +310,15 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             val trip = Trip(
                     bitmap,
                     timestamp,
-                    TrackingService.tripTimeInMillis.value!!,
+                    totalTrackingTime,
                     DataUtility.getFormattedDate(timestamp),
                     DataUtility.convertLabelToJSON(label),
                     csvPathGPS,
                     csvPathSensor,
                     false
             )
+            // Inserting the trip in the database
             viewModel.insertTrip(trip)
-
-            // Calling the stop Tracking function to stop the service and to delete all data
-            // regarding the last recorded trip
-            stopTracking()
         }
     }
 

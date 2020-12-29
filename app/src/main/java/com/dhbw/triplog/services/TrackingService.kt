@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -30,13 +28,23 @@ import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
 import com.dhbw.triplog.other.Constants.SENSOR_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
+import com.dhbw.triplog.other.DataUtility
+import com.dhbw.triplog.other.Math
 import com.dhbw.triplog.other.SensorDatapoint
 import com.dhbw.triplog.other.TrackingUtility
-import com.google.android.gms.location.*
+import com.github.doyaaaaaken.kotlincsv.client.CsvFileWriter
+import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
+import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.location.LocationResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -106,6 +114,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * Controls the Service class behaviour based on the
      * received intent
      */
+    @KotlinCsvExperimental
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when(it.action) {
@@ -131,8 +140,15 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * Stop service by unregistering the Sensors, pausing the service and stopping the
      * foreground service and finally stopping the service itself
      */
+    @KotlinCsvExperimental
     private fun stopService() {
         isTracking.postValue(false)
+
+        parallelWriteSensorData()
+        writerSensor.close()
+        writerGPS.close()
+        firstWriteOperation = true
+
         pauseService()
         stopForeground(true)
         stopSelf()
@@ -317,9 +333,11 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * Within this call, tripTimeInSeconds will be observed to update the notification element and
      * to save each collected GPS Point in a MutableList 'allGpsPoints'
      */
+    @KotlinCsvExperimental
     private fun startForegroundService() {
         // Starting the actual tracking / logging
         isTracking.postValue(true)
+        firstWriteOperation = true
         startTimer()
         registerSensors()
 
@@ -341,6 +359,9 @@ class TrackingService : LifecycleService(), SensorEventListener {
                 val notification = curNotificationBuilder
                         .setContentText("Recording - ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
                 notificationManager.notify(NOTIFICATION_ID, notification.build())
+            }
+            if((it.toInt() % 10) == 0) {
+                parallelWriteSensorData()
             }
         })
         gpsPoints.observe(this, Observer {
@@ -375,4 +396,84 @@ class TrackingService : LifecycleService(), SensorEventListener {
         )
         notificationManager.createNotificationChannel(channel)
     }
+
+    private var firstWriteOperation = true
+
+    private lateinit var writerSensor: CsvFileWriter
+    private lateinit var writerGPS: CsvFileWriter
+    private var currentPositionInSensorArray = 0
+    private var destinationPositionInSensorArray = 0
+    private var currentPositionInGPSArray = 0
+    private var destinationPositionInGPSArray = 0
+
+    private val simpleDateFormat =
+            SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z", Locale.getDefault())
+
+    /**
+     * Parallel to tracking, writing Sensor and GPS Data to a temporary csv file to save time
+     * To write the csv data, kotlin-csv is being used:
+     * https://github.com/doyaaaaaken/kotlin-csv
+     */
+    @KotlinCsvExperimental
+    private fun parallelWriteSensorData() {
+
+        // Define the file path to temp_sensor, if it is the first write operation
+        if(firstWriteOperation) {
+            val path = this.filesDir.toString()
+            val filePathSensor = "$path/temp_sensor.csv"
+            val filePathGPS = "$path/temp_gps.csv"
+            writerSensor = csvWriter().openAndGetRawWriter(filePathSensor)
+            writerSensor.writeRow(
+                    "Time_in_ns", "ACC_X", "ACC_Y", "ACC_Z",
+                    "Time_in_ns", "LINEAR_ACC_X", "LINEAR_ACC_Y", "LINEAR_ACC_Z",
+                    "Time_in_ns", "w_X", "w_Y", "w_Z"
+            )
+            writerGPS = csvWriter().openAndGetRawWriter(filePathGPS)
+            writerGPS. writeRow(
+                    "Timestamp", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed"
+            )
+            firstWriteOperation = false
+        }
+
+
+        // Fill the temp_sensor file during data collection
+        destinationPositionInSensorArray = Math.min(
+                accelerometerData.size,
+                linearAccelerometerData.size,
+                gyroscopeData.size
+        )
+        if(destinationPositionInSensorArray != 0) {
+            destinationPositionInSensorArray -= 1
+        }
+        for (i in currentPositionInSensorArray until destinationPositionInSensorArray) {
+            Timber.tag("CSV_WRITER_SENSOR").d("Current Position: $i")
+            writerSensor.writeRow(
+                    DataUtility.convertEvent(accelerometerData.getOrNull(i))
+                            + DataUtility.convertEvent(linearAccelerometerData.getOrNull(i))
+                            + DataUtility.convertEvent(gyroscopeData.getOrNull(i))
+            )
+        }
+        currentPositionInSensorArray = destinationPositionInSensorArray
+
+
+        // Fill the temp_gps file during data collection
+        destinationPositionInGPSArray = allGpsPoints.size
+        if(destinationPositionInGPSArray != 0) {
+            destinationPositionInGPSArray -= 1
+        }
+        for (i in currentPositionInGPSArray until destinationPositionInGPSArray) {
+            Timber.tag("CSV_WRITER_GPS").d("Current Position: $i")
+            writerGPS.writeRow(
+                    simpleDateFormat.format(allGpsPoints[i].time),
+                    (allGpsPoints[i].time / 1000).toString(),
+                    allGpsPoints[i].latitude.toString(),
+                    allGpsPoints[i].longitude.toString(),
+                    allGpsPoints[i].altitude.toString(),
+                    allGpsPoints[i].speed.toString()
+            )
+        }
+        currentPositionInGPSArray = destinationPositionInGPSArray
+
+    }
+
 }

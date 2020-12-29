@@ -50,88 +50,6 @@ object DataUtility {
     }
 
     /**
-     * Writing all GPS Data to a .csv file with a previously specified path
-     * To write the csv data, kotlin-csv is being used:
-     * https://github.com/doyaaaaaken/kotlin-csv
-     *
-     * @see getPathAndFilename Method being used to create the path and part of filename
-     *
-     * @param path Predefined path and part of filename
-     * @param gpsPoints List containing all recorded GPS Points
-     *
-     * @return Path pointing to the final position of the created file
-     */
-    fun writeGPSDataToFile(
-            path: String,
-            gpsPoints: MutableList<Location>
-    ) : String {
-        // Append a GPS file identification
-        val filePath = path + "_GPS"
-        Timber.d("$filePath.csv")
-
-        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd:HH:mm:ss:SS:z", Locale.getDefault())
-        csvWriter().open("$filePath.csv") {
-            writeRow("Timestamp", "Time_in_s", "Latitude", "Longitude", "Altitude", "Speed")
-            for (gpsPoint in gpsPoints) {
-                writeRow(
-                        simpleDateFormat.format(gpsPoint.time),
-                        (gpsPoint.time / 1000).toString(),
-                        gpsPoint.latitude.toString(),
-                        gpsPoint.longitude.toString(),
-                        gpsPoint.altitude.toString(),
-                        gpsPoint.speed.toString()
-                )
-            }
-        }
-        return filePath
-    }
-
-    /**
-     * Writing all Sensor Data to a .csv file with a previously specified path
-     * To write the csv data, kotlin-csv is being used:
-     * https://github.com/doyaaaaaken/kotlin-csv
-     *
-     * @see getPathAndFilename Method being used to create the path and part of filename
-     *
-     * @param path Predefined path and part of filename
-     * @param accelerometerData List containing all recorded Accelerometer Data points
-     * @param linearAccelerometerData List containing all recorded linearAccelerometer Data points
-     * @param gyroscopeData List containing all recorded gyroscopeData points
-     *
-     * @return Path pointing to the final position of the created file
-     */
-    fun writeSensorDataToFile(
-            path: String,
-            accelerometerData: MutableList<SensorDatapoint>,
-            linearAccelerometerData: MutableList<SensorDatapoint>,
-            gyroscopeData: MutableList<SensorDatapoint>
-    ) : String {
-        // Append a Sensor file identification
-        val filePath = path + "_SENSOR"
-        Timber.d("$filePath.csv")
-        // DEBUG MESSAGE Timber.d("$accelerometerData")
-
-        // Determine how many rows have to be written
-        val numberOfElements = Math.min(accelerometerData.size, linearAccelerometerData.size, gyroscopeData.size)
-
-        csvWriter().open("$filePath.csv") {
-            writeRow(
-                    "Time_in_ns", "ACC_X", "ACC_Y", "ACC_Z",
-                    "Time_in_ns", "LINEAR_ACC_X", "LINEAR_ACC_Y", "LINEAR_ACC_Z",
-                    "Time_in_ns", "w_X", "w_Y", "w_Z"
-            )
-            for (i in 0 until numberOfElements) {
-                writeRow(
-                    convertEvent(accelerometerData.getOrNull(i))
-                            + convertEvent(linearAccelerometerData.getOrNull(i))
-                            + convertEvent(gyroscopeData.getOrNull(i))
-                )
-            }
-        }
-        return filePath
-    }
-
-    /**
      * Converter method, converting a SensorDatapoint to a List containing a timestamp and the
      * sensors x, y and z values
      *
@@ -139,7 +57,7 @@ object DataUtility {
      *
      * @return List containing a timestamp and the sensors for the given data point
      */
-    private fun convertEvent (
+    fun convertEvent (
             sensorDatapoint: SensorDatapoint?
     ) : List<String> {
         if (sensorDatapoint != null) {
@@ -167,7 +85,7 @@ object DataUtility {
         val storageRef = storage.reference
 
         // Create URI from given path
-        val file = Uri.fromFile(File("$path.csv"))
+        val file = Uri.fromFile(File(path))
         // Create reference to destination path in Firebase Storage
         val csvRef = storageRef.child("trips/$uuid/${file.lastPathSegment}")
 
