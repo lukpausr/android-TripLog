@@ -15,3 +15,4 @@
 local.properties
 /app/src/main/res/values/api_keys.xml
 /app/google-services.json
+/app/src/main/res/values/dsgvo.xml
