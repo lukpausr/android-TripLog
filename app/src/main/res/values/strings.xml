@@ -25,8 +25,7 @@
         ("künstliche Intelligenz") ein Modell erstellt werden, welches Anhand eines
         Bewegungsprofiles auf das genutzte Transportmittel schließen kann.
     </string>
-    <string name="EXPLAIN_TEXT_2">
-        Deshalb ist es erforderlich, dass sich ein aufgezeichneter Trip immer nur auf
+    <string name="EXPLAIN_TEXT_2">Deshalb ist es erforderlich, dass sich ein aufgezeichneter Trip immer nur auf
         <b><u>ein</u></b> Verkehrsmittel bezieht. Die Aufnahme muss beim Wechsel des
         Verkehrsmittels beendet und dann neu gestartet werden.
     </string>
