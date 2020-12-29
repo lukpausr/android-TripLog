@@ -1,8 +1,7 @@
 package com.dhbw.triplog.ui.fragments
 
 import android.Manifest
-import android.app.Activity
-import android.app.PendingIntent
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.IntentSender
 import android.content.SharedPreferences
@@ -128,9 +127,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         }
         btnStopRecord.setOnClickListener {
             if(isTracking) {
-                gpsPoints = TrackingService.allGpsPoints
-                zoomToWholeTrack()
-                saveData()
+                //gpsPoints = TrackingService.allGpsPoints
+                showAreYouSureToSaveDialog()
+                //zoomToWholeTrack()
+                //saveData()
             }
         }
 
@@ -230,7 +230,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         gpsPointsLatLng.clear()     // Clear the gpsPointsLatLng and gpsPoints
         gpsPoints.clear()           // array in preparation for next record
         map?.clear()                // Clear the map output
-        selectedVehicle = -1           // Set the currently selected vehicle to "undefined" to
+        selectedVehicle = -1        // Set the currently selected vehicle to "undefined" to
                                     // force the user to select it again before a new record
     }
 
@@ -238,6 +238,9 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
      * Start Tracking Service by sending a "Start" command to the Tracking Service
      */
     private fun startTracking() {
+        gpsPointsLatLng.clear()
+        gpsPoints.clear()
+        map?.clear()
         sendCommandToService(ACTION_START_RESUME_SERVICE)
     }
 
@@ -262,6 +265,36 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun getLabelFromSharedPref() : Labels {
         val json = sharedPref.getString(KEY_SELECTED_LABEL, "")
         return DataUtility.retrieveLabelFromJSON(json!!)
+    }
+
+    /**
+     * Shows a AlertDialog questioning if the user wants to save his recording, not save and
+     * discard it or keep recording because he accidently hit the button
+     */
+    private fun showAreYouSureToSaveDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder
+                .setTitle("Stop Recording")
+                .setMessage(
+                        "Wollen Sie diesen Trip wirklich speichern?\nBitte stellen " +
+                        "Sie sicher, dass während dieser Aufnahme nur ein einziges " +
+                        "Verkehrsmittel genutzt wurde. Falls dies nicht der Fall war " +
+                        "oder andere nicht vorhergesehene Ereignisse aufgetreten sind, " +
+                        "können Sie diese aufnahme verwerfen.\nSind Sie versehentlich" +
+                        "auf diese Schaltfläche gekommen, können Sie die Aufnahme mit Abbruch " +
+                        "fortsetzen."
+                )
+        alertDialogBuilder
+                .setPositiveButton("Aufnahme beenden und speichern") { _, _ ->
+                    zoomToWholeTrack()
+                    saveData()
+                }
+                .setNeutralButton("Abbruch", null)
+                .setNegativeButton("Aufnahme verwerfen") { _, _ ->
+                    stopTracking()
+                }
+        val dialog = alertDialogBuilder.create()
+        dialog.show()
     }
 
     /**
