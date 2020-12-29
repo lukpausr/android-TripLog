@@ -282,15 +282,15 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                         "oder andere nicht vorhergesehene Ereignisse aufgetreten sind, " +
                         "können Sie diese Aufnahme verwerfen.\nSind Sie versehentlich" +
                         "auf diese Schaltfläche gekommen, können Sie die Aufnahme mit Abbruch " +
-                        "fortsetzen."
+                        "fortsetzen.\n\nAufnahme:"
                 )
         alertDialogBuilder
-                .setPositiveButton("Aufnahme beenden und speichern") { _, _ ->
+                .setPositiveButton("Speichern und beenden") { _, _ ->
                     zoomToWholeTrack()
                     saveData()
                 }
-                .setNeutralButton("Aufnahme fortsetzen", null)
-                .setNegativeButton("Aufnahme verwerfen") { _, _ ->
+                .setNeutralButton("Fortsetzen", null)
+                .setNegativeButton("Verwerfen") { _, _ ->
                     stopTracking()
                 }
         val dialog = alertDialogBuilder.create()
