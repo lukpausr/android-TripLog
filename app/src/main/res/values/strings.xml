@@ -22,7 +22,7 @@
     <string name="EXPLAIN_TEXT_1">
         Als Nutzer dieser App tragen Sie zu einer Studienarbeit
         der DHBW Stuttgart bei. Anhand der aufgenommenen Daten soll durch maschinelles Lernen
-        ("künstliche Intelligenz") ein Modell erstellt werden, welches Anhand eines
+        ("künstliche Intelligenz") ein Modell erstellt werden, welches mittels eines
         Bewegungsprofiles auf das genutzte Transportmittel schließen kann.
     </string>
     <string name="EXPLAIN_TEXT_2">Deshalb ist es erforderlich, dass sich ein aufgezeichneter Trip immer nur auf

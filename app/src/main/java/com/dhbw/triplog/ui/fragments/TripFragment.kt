@@ -280,7 +280,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                         "Sie sicher, dass während dieser Aufnahme nur ein einziges " +
                         "Verkehrsmittel genutzt wurde. Falls dies nicht der Fall war " +
                         "oder andere nicht vorhergesehene Ereignisse aufgetreten sind, " +
-                        "können Sie diese aufnahme verwerfen.\nSind Sie versehentlich" +
+                        "können Sie diese Aufnahme verwerfen.\nSind Sie versehentlich" +
                         "auf diese Schaltfläche gekommen, können Sie die Aufnahme mit Abbruch " +
                         "fortsetzen."
                 )
@@ -289,7 +289,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     zoomToWholeTrack()
                     saveData()
                 }
-                .setNeutralButton("Abbruch", null)
+                .setNeutralButton("Aufnahme fortsetzen", null)
                 .setNegativeButton("Aufnahme verwerfen") { _, _ ->
                     stopTracking()
                 }
