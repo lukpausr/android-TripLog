@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
@@ -96,6 +98,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
         isTracking.observe(this, Observer {
             Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
+            updateNotificationState(it)
         })
     }
 
@@ -336,16 +339,27 @@ class TrackingService : LifecycleService(), SensorEventListener {
         tripTimeInSeconds.observe(this, Observer {
             if(isTracking.value!!) {
                 val notification = curNotificationBuilder
-                        .setStyle(NotificationCompat
-                            .BigTextStyle()
-                            .bigText("Recording\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}"))
-                        .setContentText("Recording\nTime spent: ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
+                        .setContentText("Recording - ${TrackingUtility.getFormattedStopWatchTime(it * 1000L)}")
                 notificationManager.notify(NOTIFICATION_ID, notification.build())
             }
         })
         gpsPoints.observe(this, Observer {
             allGpsPoints.add(it)
         })
+    }
+
+    /**
+     * Update Notification when LiveData isTracking indicating the current tracking state is true
+     *
+     * @param isTracking Indication of the current tracking state
+     */
+    private fun updateNotificationState(isTracking: Boolean) {
+        val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (isTracking) {
+            curNotificationBuilder = baseNotificationBuilder
+            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        }
     }
 
     /**
