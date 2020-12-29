@@ -1,93 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dsgvo">
-Datenschutzerklärung
-
-Personenbezogene Daten (nachfolgend zumeist nur „Daten“ genannt) werden von uns nur im Rahmen der Erforderlichkeit sowie zum Zwecke der Bereitstellung eines funktionsfähigen und nutzerfreundlichen Internetauftritts, inklusive seiner Inhalte und der dort angebotenen Leistungen, verarbeitet.
-
-Gemäß Art. 4 Ziffer 1. der Verordnung (EU) 2016/679, also der Datenschutz-Grundverordnung (nachfolgend nur „DSGVO“ genannt), gilt als „Verarbeitung“ jeder mit oder ohne Hilfe automatisierter Verfahren ausgeführter Vorgang oder jede solche Vorgangsreihe im Zusammenhang mit personenbezogenen Daten, wie das Erheben, das Erfassen, die Organisation, das Ordnen, die Speicherung, die Anpassung oder Veränderung, das Auslesen, das Abfragen, die Verwendung, die Offenlegung durch Übermittlung, Verbreitung oder eine andere Form der Bereitstellung, den Abgleich oder die Verknüpfung, die Einschränkung, das Löschen oder die Vernichtung.
-
-Mit der nachfolgenden Datenschutzerklärung informieren wir Sie insbesondere über Art, Umfang, Zweck, Dauer und Rechtsgrundlage der Verarbeitung personenbezogener Daten, soweit wir entweder allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung entscheiden. Zudem informieren wir Sie nachfolgend über die von uns zu Optimierungszwecken sowie zur Steigerung der Nutzungsqualität eingesetzten Fremdkomponenten, soweit hierdurch Dritte Daten in wiederum eigener Verantwortung verarbeiten.
-
-Unsere Datenschutzerklärung ist wie folgt gegliedert:
-
-I. Informationen über uns als Verantwortliche
-II. Rechte der Nutzer und Betroffenen
-III. Informationen zur Datenverarbeitung
-
-I. Informationen über uns als Verantwortliche
-Verantwortlicher Anbieter dieses Internetauftritts im datenschutzrechtlichen Sinne ist:
-
-Musterfirma/Musterunternehmer
-Musterstraße 1
-12345 Musterstadt
-Deutschland
-
-Telefon: Telefonnummer
-Telefax: Faxnummer
-E-Mail: muster@mustermail.xy
-
-Datenschutzbeauftragte/r beim Anbieter ist:
-
-Maxie Musterfrau
-
-[nachfolgende Angaben sind zu ergänzen, sofern ein Externer Datenschutzbeauftragter bestellt ist]
-
-Musterstraße 1
-12345 Musterstadt
-Deutschland
-
-Telefon: Telefonnummer
-Telefax: Faxnummer
-E-Mail: datenschutz@mustermail.xy
-
-II. Rechte der Nutzer und Betroffenen
-Mit Blick auf die nachfolgend noch näher beschriebene Datenverarbeitung haben die Nutzer und Betroffenen das Recht
-
-auf Bestätigung, ob sie betreffende Daten verarbeitet werden, auf Auskunft über die verarbeiteten Daten, auf weitere Informationen über die Datenverarbeitung sowie auf Kopien der Daten (vgl. auch Art. 15 DSGVO);
-auf Berichtigung oder Vervollständigung unrichtiger bzw. unvollständiger Daten (vgl. auch Art. 16 DSGVO);
-auf unverzügliche Löschung der sie betreffenden Daten (vgl. auch Art. 17 DSGVO), oder, alternativ, soweit eine weitere Verarbeitung gemäß Art. 17 Abs. 3 DSGVO erforderlich ist, auf Einschränkung der Verarbeitung nach Maßgabe von Art. 18 DSGVO;
-auf Erhalt der sie betreffenden und von ihnen bereitgestellten Daten und auf Übermittlung dieser Daten an andere Anbieter/Verantwortliche (vgl. auch Art. 20 DSGVO);
-auf Beschwerde gegenüber der Aufsichtsbehörde, sofern sie der Ansicht sind, dass die sie betreffenden Daten durch den Anbieter unter Verstoß gegen datenschutzrechtliche Bestimmungen verarbeitet werden (vgl. auch Art. 77 DSGVO).
-Darüber hinaus ist der Anbieter dazu verpflichtet, alle Empfänger, denen gegenüber Daten durch den Anbieter offengelegt worden sind, über jedwede Berichtigung oder Löschung von Daten oder die Einschränkung der Verarbeitung, die aufgrund der Artikel 16, 17 Abs. 1, 18 DSGVO erfolgt, zu unterrichten. Diese Verpflichtung besteht jedoch nicht, soweit diese Mitteilung unmöglich oder mit einem unverhältnismäßigen Aufwand verbunden ist. Unbeschadet dessen hat der Nutzer ein Recht auf Auskunft über diese Empfänger.
-
-Ebenfalls haben die Nutzer und Betroffenen nach Art. 21 DSGVO das Recht auf Widerspruch gegen die künftige Verarbeitung der sie betreffenden Daten, sofern die Daten durch den Anbieter nach Maßgabe von Art. 6 Abs. 1 lit. f) DSGVO verarbeitet werden. Insbesondere ist ein Widerspruch gegen die Datenverarbeitung zum Zwecke der Direktwerbung statthaft.
-
-III. Informationen zur Datenverarbeitung
-Ihre bei Nutzung unseres Internetauftritts verarbeiteten Daten werden gelöscht oder gesperrt, sobald der Zweck der Speicherung entfällt, der Löschung der Daten keine gesetzlichen Aufbewahrungspflichten entgegenstehen und nachfolgend keine anderslautenden Angaben zu einzelnen Verarbeitungsverfahren gemacht werden.
-
-Serverdaten
-Aus technischen Gründen, insbesondere zur Gewährleistung eines sicheren und stabilen Internetauftritts, werden Daten durch Ihren Internet-Browser an uns bzw. an unseren Webspace-Provider übermittelt. Mit diesen sog. Server-Logfiles werden u.a. Typ und Version Ihres Internetbrowsers, das Betriebssystem, die Website, von der aus Sie auf unseren Internetauftritt gewechselt haben (Referrer URL), die Website(s) unseres Internetauftritts, die Sie besuchen, Datum und Uhrzeit des jeweiligen Zugriffs sowie die IP-Adresse des Internetanschlusses, von dem aus die Nutzung unseres Internetauftritts erfolgt, erhoben.
-
-Diese so erhobenen Daten werden vorrübergehend gespeichert, dies jedoch nicht gemeinsam mit anderen Daten von Ihnen.
-
-Diese Speicherung erfolgt auf der Rechtsgrundlage von Art. 6 Abs. 1 lit. f) DSGVO. Unser berechtigtes Interesse liegt in der Verbesserung, Stabilität, Funktionalität und Sicherheit unseres Internetauftritts.
-
-Die Daten werden spätestens nach sieben Tage wieder gelöscht, soweit keine weitere Aufbewahrung zu Beweiszwecken erforderlich ist. Andernfalls sind die Daten bis zur endgültigen Klärung eines Vorfalls ganz oder teilweise von der Löschung ausgenommen.
-
-Google-Maps
-In unserem Internetauftritt setzen wir Google Maps zur Darstellung unseres Standorts sowie zur Erstellung einer Anfahrtsbeschreibung ein. Es handelt sich hierbei um einen Dienst der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, nachfolgend nur „Google“ genannt.
-
-Um die Darstellung bestimmter Schriften in unserem Internetauftritt zu ermöglichen, wird bei Aufruf unseres Internetauftritts eine Verbindung zu dem Google-Server in den USA aufgebaut.
-
-Sofern Sie die in unseren Internetauftritt eingebundene Komponente Google Maps aufrufen, speichert Google über Ihren Internet-Browser ein Cookie auf Ihrem Endgerät. Um unseren Standort anzuzeigen und eine Anfahrtsbeschreibung zu erstellen, werden Ihre Nutzereinstellungen und -daten verarbeitet. Hierbei können wir nicht ausschließen, dass Google Server in den USA einsetzt.
-
-Rechtsgrundlage ist Art. 6 Abs. 1 lit. f) DSGVO. Unser berechtigtes Interesse liegt in der Optimierung der Funktionalität unseres Internetauftritts.
-
-Durch die so hergestellte Verbindung zu Google kann Google ermitteln, von welcher Website Ihre Anfrage gesendet worden ist und an welche IP-Adresse die Anfahrtsbeschreibung zu übermitteln ist.
-
-Sofern Sie mit dieser Verarbeitung nicht einverstanden sind, haben Sie die Möglichkeit, die Installation der Cookies durch die entsprechenden Einstellungen in Ihrem Internet-Browser zu verhindern. Einzelheiten hierzu finden Sie vorstehend unter dem Punkt „Cookies“.
-
-Zudem erfolgt die Nutzung von Google Maps sowie der über Google Maps erlangten Informationen nach den Google-Nutzungsbedingungen https://policies.google.com/terms?gl=DE&amp;;hl=de und den Geschäftsbedingungen für Google Maps https://www.google.com/intl/de_de/help/terms_maps.html.
-
-Überdies bietet Google unter
-
-https://adssettings.google.com/authenticated
-
-https://policies.google.com/privacy
-
-weitergehende Informationen an.
-
-Muster-Datenschutzerklärung der Anwaltskanzlei Weiß &amp; Partner
+    <string name="DSGVO">
+        <![CDATA[
+        <p><strong>Datenschutz Information</strong></p>
+        <p><strong>I. Grundangaben</strong></p>
+        <p><strong>1. Name und Kontaktdaten der Verantwortlichen</strong></p>
+        <p>Lukas Pelz<br />Fontanestr. 21<br />71277 Rutesheim<br />mt18034@lehre.dhbw-stuttgart.de</p>
+        <p>Johanna Kröner<br />Ruhrstraße 68<br />70372 Stuttgart<br />mt18074@lehre.dhbw-stuttgart.de</p>
+        <p><strong>2. Zwecke und Rechtsgrundlagen der Verarbeitung</strong></p>
+        <p>Ihre Daten werden erhoben, um im Rahmen einer Studienarbeit an der DHBW Stuttgart die Art eines Verkehrsmittels mittels Datenanalyse von Bewegungsprofilen zu ermitteln.</p>
+        <p>Ihre Daten werden auf Grundlage von Art. 6 Abs. 1a verarbeitet.</p>
+        <p><strong>3. Kategorien der personenbezogenen Daten, die verarbeitet werden</strong></p>
+        <p>Im Rahmen der Studienarbeit werden folgende Daten ermittelt, die lediglich mit einer zufälligen ID mit Ihnen in Verbindung gebracht werden können:</p>
+        <ul>
+        <li>Bewegungsprofile aus Positions (GPS)- und Sensordaten</li>
+        </ul>
+        <p><strong>4. Empfänger oder Kategorien von Empfängern der personenbezogenen Daten</strong></p>
+        <p>Ihre personenbezogenen Daten werden übermittelt an:</p>
+        <ul>
+        <li>Google Maps API</li>
+        <li>Google Firebase API</li>
+        <li>Google Location API</li>
+        <li>Duale Hochschule Baden-Württemberg Stuttgart</li>
+        </ul>
+        <p>Zum Zugriff auf Ihre Daten werden diese von Ihnen anonym mit einer zufällig generierten UserID auf eine Speicherinstanz (Google Firebase Storage) hochgeladen. über diese Speicherinstanz kann von uns auf die Daten zugegriffen werden, um diese im Rahmen der Studienarbeit an der DHBW Stuttgart weiterzuverarbeiten.</p>
+        <p>Die Bereitstellung der Daten für uns erfolgt über die genannte Speicherinstanz. Die Vertraulichkeit und Integrität (Unverletzlichkeit) kann damit nicht garantiert werden. Über einen geheimen Schlüssel und den Link auf diese Speicherinstanz kann in einem ungünstigen Fall auf Ihre Daten zugegriffen werden. Ihre Daten können somit auch in Drittländern abgerufen werden, die keine der Bundesrepublik Deutschland vergleichbaren Datenschutzbestimmungen kennen.</p>
+        <p><strong>II. Weitere allgemeine Pflichtangaben</strong></p>
+        <p><strong>1. Bezeichnung der Verarbeitungstätigkeit</strong></p>
+        <p>Ihre Daten werden für die Nutzung im Rahmen der Studienarbeit "Ermittluung der Art von Verkehrsmitteln mittels Datenanalyse von Bewegungsprofilen" an der DHBW Stuttgart erhoben.</p>
+        <p><strong>2. Quelle der Daten</strong></p>
+        <p>Die Daten werden mit der Google Location API sowie den internen Sensoren Ihres Android Gerätes erhoben.</p>
+        <p><strong>3. Dauer der Speicherung der personenbezogenen Daten</strong></p>
+        <p>Die erhobenen Daten werden auf unbegrenzte Zeit gespeichert und möglicherweise für nachfolgende Studienarbeiten an der DHBW Stuttgart weiterverwendet.</p>
+        <p><strong>4. Löschung Ihrer Daten</strong></p>
+        <p>Auf Anfrage und in Verbindung mit Ihrer UserID (unter Settings &amp; FAQ -&gt; UserID) können Ihre Bewegungsprofile aus der Google Firestore Storage Instanz gelöscht werden.</p>
+        ]]>
     </string>
 </resources>

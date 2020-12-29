@@ -49,7 +49,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:padding="6dp"
-                android:text="@string/dsgvo"
+                android:text=""
                 />
 
         </LinearLayout>

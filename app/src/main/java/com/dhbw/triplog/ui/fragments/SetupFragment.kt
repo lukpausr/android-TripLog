@@ -3,10 +3,9 @@ package com.dhbw.triplog.ui.fragments
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.IdRes
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
 import androidx.navigation.fragment.findNavController
 import com.dhbw.triplog.R
 import com.dhbw.triplog.other.Constants.KEY_DSGVO
@@ -39,6 +38,11 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tvDsgvo.text = HtmlCompat.fromHtml(
+                getString(R.string.DSGVO),
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
 
         if(sharedPref.getBoolean(KEY_DSGVO, false)) {
             val navOptions = NavOptions.Builder()
