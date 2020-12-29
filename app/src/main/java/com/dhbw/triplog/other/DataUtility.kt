@@ -101,6 +101,8 @@ object DataUtility {
             Timber.d("Upload not successful")
         }.addOnSuccessListener {
             Timber.d("Upload successful")
+            val fileToDelete = File(path)
+            fileToDelete.delete()
         }
     }
 
