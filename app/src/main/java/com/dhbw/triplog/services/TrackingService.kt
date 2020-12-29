@@ -150,6 +150,9 @@ class TrackingService : LifecycleService(), SensorEventListener {
         firstWriteOperation = true
 
         pauseService()
+
+        allGpsPoints.clear()
+
         stopForeground(true)
         stopSelf()
     }
