@@ -26,6 +26,7 @@ import com.dhbw.triplog.other.Constants.LOCATION_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.dhbw.triplog.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.dhbw.triplog.other.Constants.NOTIFICATION_ID
+import com.dhbw.triplog.other.Constants.SENSOR_COLLECT_INTERVAL
 import com.dhbw.triplog.other.Constants.SENSOR_UPDATE_INTERVAL
 import com.dhbw.triplog.other.Constants.TIMER_UPDATE_INTERVAL
 import com.dhbw.triplog.other.DataUtility
@@ -171,11 +172,19 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * SENSOR RELATED METHODS
      */
 
+    private var lastSavedAcc = 0L
+    private var lastSavedLinAcc = 0L
+    private var lastSavedGyr = 0L
+
     /**
      * Setting up the sensor by creating a reference to sensorService for the
      * 'lateinit var sensorManager'
      */
     private fun setupSensor() {
+        val startTime = System.currentTimeMillis()
+        lastSavedAcc = startTime
+        lastSavedLinAcc = startTime
+        lastSavedGyr = startTime
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
@@ -208,17 +217,40 @@ class TrackingService : LifecycleService(), SensorEventListener {
      * Because the event parameter is pointing to the SensorEvent and the SensorEvent is overridden
      * with each onSensorChanged call, we need to copy the SensorEvent to have persistent data. The
      * solution for this is to create a custom class 'SensorDatapoint', which contains all
-     * properties of 'SensorEvent' we need to use later on
+     * properties of 'SensorEvent' we need to use later on.
+     * Because of the SensorManager emitting more SensorEvents than being asked for, additional
+     * logic is needed to get sensor events in the targeted frequency/period, see:
+     * https://stackoverflow.com/a/26861717
      *
      * @param event SensorEvent object, which is always the same (being pointed to!)
      */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event != null) {
-            val datapoint = SensorDatapoint(event)
             when (event.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> accelerometerData.add(datapoint)
-                Sensor.TYPE_LINEAR_ACCELERATION -> linearAccelerometerData.add(datapoint)
-                Sensor.TYPE_GYROSCOPE -> gyroscopeData.add(datapoint)
+                Sensor.TYPE_ACCELEROMETER -> {
+                    //val time = System.currentTimeMillis()
+                    val time = event.timestamp
+                    if ((time - lastSavedAcc) > SENSOR_COLLECT_INTERVAL) {
+                        lastSavedAcc = time
+                        accelerometerData.add(SensorDatapoint(event))
+                    }
+                }
+                Sensor.TYPE_LINEAR_ACCELERATION -> {
+                    //val time = System.currentTimeMillis()
+                    val time = event.timestamp
+                    if ((time - lastSavedLinAcc) > SENSOR_COLLECT_INTERVAL) {
+                        lastSavedLinAcc = time
+                        linearAccelerometerData.add(SensorDatapoint(event))
+                    }
+                }
+                Sensor.TYPE_GYROSCOPE -> {
+                    //val time = System.currentTimeMillis()
+                    val time = event.timestamp
+                    if ((time - lastSavedGyr) > SENSOR_COLLECT_INTERVAL) {
+                        lastSavedGyr = time
+                        gyroscopeData.add(SensorDatapoint(event))
+                    }
+                }
             }
         }
     }

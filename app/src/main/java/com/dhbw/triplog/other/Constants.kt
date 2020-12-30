@@ -32,8 +32,11 @@ object Constants {
     const val LOCATION_UPDATE_INTERVAL = 5000L
     const val FASTEST_LOCATION_INTERVAL = 3000L
 
-    // Sensor Update Interval uS
-    const val SENSOR_UPDATE_INTERVAL = 20000
+    // Sensor Update Interval us
+    const val SENSOR_UPDATE_INTERVAL = 5000
+
+    // Sensor Collect Interval ns
+    const val SENSOR_COLLECT_INTERVAL = 20000000
 
     // Map
     const val MAP_ZOOM = 15f
