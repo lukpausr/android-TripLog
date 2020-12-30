@@ -18,8 +18,10 @@ import com.dhbw.triplog.db.Trip
 import com.dhbw.triplog.other.DataUtility
 import com.dhbw.triplog.other.DeviceRandomUUID
 import com.dhbw.triplog.ui.viewmodels.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_info.*
+import kotlinx.android.synthetic.main.fragment_setup.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -68,11 +70,13 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
             if(online) {
                 uploadAllTrips()
             } else {
-                Toast.makeText(
-                        context,
+                Snackbar.make(
+                        requireView(),
                         "You do not have internet connection, please try again later",
-                        Toast.LENGTH_SHORT
-                ).show()
+                        Snackbar.LENGTH_LONG
+                )
+                        .setAnchorView(btnUpload)
+                        .show()
             }
         }
     }

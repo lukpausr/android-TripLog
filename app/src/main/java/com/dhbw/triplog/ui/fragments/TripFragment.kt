@@ -46,8 +46,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_info.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -118,11 +120,13 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             if(!isTracking && selectedVehicle != -1) {
                 enableLocation()
             } else if (selectedVehicle == -1) {
-                Toast.makeText(
-                        context,
+                Snackbar.make(
+                        requireView(),
                         "Please select the transportation type first!",
-                        Toast.LENGTH_LONG
-                ).show()
+                        Snackbar.LENGTH_LONG
+                )
+                        .setAnchorView(btnStartRecord)
+                        .show()
             }
         }
         btnStopRecord.setOnClickListener {
