@@ -20,7 +20,6 @@ import com.dhbw.triplog.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_info.*
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -103,7 +102,7 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         // Upload all Data to the Cloud, annotated with the User ID for encrypted
         // User Identification
         for(trip in trips) {
-            Timber.d("GPS: ${trip.fileNameGPS} + SENSOR: ${trip.fileNameSensor}")
+            // Timber.d("GPS: ${trip.fileNameGPS} + SENSOR: ${trip.fileNameSensor}")
             trip.fileNameGPS?.let { DataUtility.uploadFileToFirebase(it, ruuid) }
             trip.fileNameSensor?.let { DataUtility.uploadFileToFirebase(it, ruuid) }
             trip.id?.let { viewModel.updateTrip(true, it) }

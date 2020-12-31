@@ -43,7 +43,6 @@ import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -105,7 +104,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
         setupSensor()
 
         isTracking.observe(this, Observer {
-            Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
+            // Timber.d("TRACKING_SERVICE: isTracking changed to ${isTracking.value}")
             updateLocationTracking(it)
             updateNotificationState(it)
         })
@@ -120,18 +119,20 @@ class TrackingService : LifecycleService(), SensorEventListener {
         intent?.let {
             when(it.action) {
                 ACTION_START_RESUME_SERVICE -> {
-                    Timber.d("TRACKING_SERVICE: Started / Resumed Service")
+                    // Timber.d("TRACKING_SERVICE: Started / Resumed Service")
                     startForegroundService()
                 }
                 ACTION_PAUSE_SERVICE -> {
-                    Timber.d("TRACKING_SERVICE: Paused Service")
+                    // Timber.d("TRACKING_SERVICE: Paused Service")
                     pauseService()
                 }
                 ACTION_STOP_SERVICE -> {
-                    Timber.d("TRACKING_SERVICE: Stopped Service")
+                    // Timber.d("TRACKING_SERVICE: Stopped Service")
                     stopService()
                 }
-                else -> Timber.d("TRACKING_SERVICE: ERROR")
+                else -> {
+                    // Timber.d("TRACKING_SERVICE: ERROR")
+                }
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -314,7 +315,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
                 result?.locations?.let { locations ->
                     for(location in locations) {
                         addTrackPoint(location)
-                        Timber.d("NEW LOCATION: [Lon: ${location.latitude}, Lat: ${location.longitude}, Alt: ${location.altitude}]")
+                        // Timber.d("NEW LOCATION: [Lon: ${location.latitude}, Lat: ${location.longitude}, Alt: ${location.altitude}]")
                     }
                 }
             }
@@ -481,7 +482,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
             destinationPositionInSensorArray -= 1
         }
         for (i in currentPositionInSensorArray until destinationPositionInSensorArray) {
-            Timber.tag("CSV_WRITER_SENSOR").d("Current Position: $i")
+            // Timber.tag("CSV_WRITER_SENSOR").d("Current Position: $i")
             writerSensor.writeRow(
                     DataUtility.convertEvent(accelerometerData.getOrNull(i))
                             + DataUtility.convertEvent(linearAccelerometerData.getOrNull(i))
@@ -497,7 +498,7 @@ class TrackingService : LifecycleService(), SensorEventListener {
             destinationPositionInGPSArray -= 1
         }
         for (i in currentPositionInGPSArray until destinationPositionInGPSArray) {
-            Timber.tag("CSV_WRITER_GPS").d("Current Position: $i")
+            // Timber.tag("CSV_WRITER_GPS").d("Current Position: $i")
             writerGPS.writeRow(
                     simpleDateFormat.format(allGpsPoints[i].time),
                     (allGpsPoints[i].time / 1000).toString(),

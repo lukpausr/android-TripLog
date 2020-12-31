@@ -3,9 +3,6 @@ package com.dhbw.triplog.other
 import android.Manifest
 import android.content.Context
 import android.os.Build
-import com.google.android.gms.location.ActivityTransition
-import com.google.android.gms.location.ActivityTransitionResult
-import com.google.android.gms.location.DetectedActivity
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 

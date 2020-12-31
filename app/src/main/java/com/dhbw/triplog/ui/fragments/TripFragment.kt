@@ -51,7 +51,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_trip.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -590,7 +589,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         adapter.setOnClick(object : RecyclerViewCallback<VehicleItem> {
             override fun onItemClicked(view: View, position: Int, item: VehicleItem) {
                 selectedVehicle = position
-                Timber.d("Label: data = ${item.name}")
+                // Timber.d("Label: data = ${item.name}")
                 when (item.name) {
                     "Fuß (gehen)" -> selectedTransportType = Labels.WALK
                     "Fuß (Joggen)" -> selectedTransportType = Labels.RUN

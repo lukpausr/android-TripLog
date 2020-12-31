@@ -3,13 +3,11 @@ package com.dhbw.triplog.other
 import android.content.Context
 import android.location.Location
 import android.net.Uri
-import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import com.google.gson.Gson
-import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -89,7 +87,7 @@ object DataUtility {
         // Create reference to destination path in Firebase Storage
         val csvRef = storageRef.child("trips/$uuid/${file.lastPathSegment}")
 
-        Timber.d("trips/$uuid/${file.lastPathSegment}")
+        // Timber.d("trips/$uuid/${file.lastPathSegment}")
 
         val metadata = storageMetadata {
             contentType = "trip/csv"
@@ -98,9 +96,9 @@ object DataUtility {
         // Upload file to destination path in Firebase Storage
         val uploadTask = csvRef.putFile(file, metadata)
         uploadTask.addOnFailureListener {
-            Timber.d("Upload not successful")
+            // Timber.d("Upload not successful")
         }.addOnSuccessListener {
-            Timber.d("Upload successful")
+            // Timber.d("Upload successful")
             val fileToDelete = File(path)
             fileToDelete.delete()
         }
