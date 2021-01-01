@@ -119,7 +119,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
             } else if (selectedVehicle == -1) {
                 Snackbar.make(
                         requireView(),
-                        "Please select the transportation type first!",
+                        "Bitte wählen Sie zuerst das Transportmittel aus!",
                         Snackbar.LENGTH_LONG
                 )
                         .setAnchorView(btnStartRecord)
@@ -233,6 +233,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         map?.clear()                // Clear the map output
         selectedVehicle = -1        // Set the currently selected vehicle to "undefined" to
                                     // force the user to select it again before a new record
+        btnVehicleSelection.text = resources.getString(R.string.transport_type)
     }
 
     /**
@@ -275,7 +276,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
     private fun showAreYouSureToSaveDialog() {
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder
-                .setTitle("Stop Recording")
+                .setTitle("Aufnahme stoppen")
                 .setMessage(
                         "Wollen Sie diesen Trip wirklich speichern?\nBitte stellen " +
                         "Sie sicher, dass während dieser Aufnahme nur ein einziges " +
@@ -492,7 +493,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             EasyPermissions.requestPermissions(
                     this,
-                    "You need to accept location permissions to use this app.",
+                    "Sie müssen den Zugriff auf Ihre Position dauerhaft " +
+                            "erlauben, um diese App zu benutzen!",
                     REQUEST_CODE_LOCATION_PERMISSION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -500,7 +502,8 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
         } else {
             EasyPermissions.requestPermissions(
                     this,
-                    "You need to accept location permissions to use this app.",
+                "Sie müssen den Zugriff auf Ihre Position dauerhaft " +
+                        "erlauben, um diese App zu benutzen!",
                     REQUEST_CODE_LOCATION_PERMISSION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -604,6 +607,7 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                     "S-Bahn" -> selectedTransportType = Labels.S_TRAIN
                     "U-Bahn" -> selectedTransportType = Labels.SUBWAY
                 }
+                btnVehicleSelection.text = item.name
                 writeLabelToSharedPref(selectedTransportType)
                 dismissPopup()
             }

@@ -1,21 +1,21 @@
 <resources>
     <string name="app_name">TripLog</string>
 
-    <string name="UPLOAD">Upload</string>
-    <string name="TRIPS">Trips</string>
-    <string name="SETTINGS">Settings &amp; FAQ</string>
+    <string name="UPLOAD">Hochladen</string>
+    <string name="TRIPS">Aufnahme</string>
+    <string name="SETTINGS">Informationen</string>
 
-    <string name="TRACKING_ACTIVE">Tracking active</string>
-    <string name="TRACKING_INACTIVE">Tracking inactive</string>
+    <string name="TRACKING_ACTIVE">Aufnahme läuft…</string>
+    <string name="TRACKING_INACTIVE">Aufnahme gestoppt</string>
 
-    <string name="UPLOAD_SUCCESSFUL">Uploaded</string>
-    <string name="UPLOAD_NOT_SUCCESSFUL">Not Uploaded</string>
+    <string name="UPLOAD_SUCCESSFUL">Hochgeladen</string>
+    <string name="UPLOAD_NOT_SUCCESSFUL">Nicht Hochgeladen</string>
 
     <string name="VECTOR_GRAPHIC">VECTOR_GRAPHIC</string>
 
-    <string name="USER_ID">User ID</string>
+    <string name="USER_ID">Benutzer ID</string>
     <string name="DSGVO_STATUS">DSGVO</string>
-    <string name="GITHUB_HEADER">Github (insight into data collection)</string>
+    <string name="GITHUB_HEADER">Github (Einblick in die Datenaufnahme)</string>
     <string name="GITHUB_LINK">https://github.com/lukpausr/android-TripLog</string>
     <string name="EXPLAIN_HEADER_1">Studienarbeit der DHBW - Stuttgart</string>
     <string name="EXPLAIN_HEADER_2">Eine kurze Erklärung:</string>
@@ -41,4 +41,10 @@
     <string name="EXPLAIN_STEP_2">
         1. wähle Menüpunkt "Upload"\n2. Hochladen mit Upload
     </string>
+    <string name="accept">Akzeptieren</string>
+    <string name="decline">Ablehnen</string>
+    <string name="transport_type">Transportmittel</string>
+    <string name="tracking_inactive">Aufnahme gestoppt</string>
+    <string name="start_recording">Aufnahme starten</string>
+    <string name="stop_recording">Aufnahme stoppen</string>
 </resources>

@@ -69,7 +69,8 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
             } else {
                 Snackbar.make(
                         requireView(),
-                        "You do not have internet connection, please try again later",
+                        "Sie haben keine Internetverbindung, bitte" +
+                                " versuchen Sie es später noch einmal",
                         Snackbar.LENGTH_LONG
                 )
                         .setAnchorView(btnUpload)
