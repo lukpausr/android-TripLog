@@ -34,12 +34,11 @@
     </string>
     <string name="EXPLAIN_HEADER_STEP_1">Trip aufzeichnen:</string>
     <string name="EXPLAIN_STEP_1">
-        1. wähle Transportmittel (Transport Type)\n2. Starte die Aufnahme
-        (Start Recording)\n3. Stoppe die Aufnahme (Stop Recording)
+        1. wähle Transportmittel\n2. Starte die Aufnahme\n3. Stoppe die Aufnahme
     </string>
     <string name="EXPLAIN_HEADER_STEP_2">Trip hochladen:</string>
     <string name="EXPLAIN_STEP_2">
-        1. wähle Menüpunkt "Upload"\n2. Hochladen mit Upload
+        1. wähle Menüpunkt "Hochladen"\n2. Hochladen
     </string>
     <string name="accept">Akzeptieren</string>
     <string name="decline">Ablehnen</string>

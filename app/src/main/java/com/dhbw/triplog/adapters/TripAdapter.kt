@@ -15,7 +15,7 @@ import com.dhbw.triplog.other.TrackingUtility
 import kotlinx.android.synthetic.main.item_trip.view.*
 
 /**
- * Adapter class extending RecyclerView.Adapter being used to show all trips in the InfoFragment
+ * Adapter class extending RecyclerView.Adapter being used to show all trips in the UploadFragment
  *
  * @property differ
  */

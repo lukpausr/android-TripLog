@@ -16,14 +16,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.dhbw.triplog.ui.fragments.SettingsFragment"
+        android:id="@+id/infoFragment"
+        android:name="com.dhbw.triplog.ui.fragments.InfoFragment"
         android:label="SettingsFragment">
     </fragment>
 
     <fragment
-        android:id="@+id/infoFragment"
-        android:name="com.dhbw.triplog.ui.fragments.InfoFragment"
+        android:id="@+id/uploadFragment"
+        android:name="com.dhbw.triplog.ui.fragments.UploadFragment"
         android:label="InfoFragment">
     </fragment>
 

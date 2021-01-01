@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/infoFragment"
+        android:id="@+id/uploadFragment"
         android:enabled="true"
         android:title="@string/UPLOAD"
         android:icon="@drawable/ic_baseline_cloud_upload_24" />
@@ -14,7 +14,7 @@
         android:icon="@drawable/ic_baseline_near_me_24" />
 
     <item
-        android:id="@+id/settingsFragment"
+        android:id="@+id/infoFragment"
         android:enabled="true"
         android:title="@string/SETTINGS"
         android:icon="@drawable/ic_baseline_settings_24" />
