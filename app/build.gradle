@@ -9,6 +9,14 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'org.jetbrains.dokka'
 
 android {
+    signingConfigs {
+        buildConfig {
+            storeFile file('Z:\\2020-JG18-T31Bewegungsanalyse-Pelz-Kroener\\07-App\\App Keystore\\DHBW_TripLog_Key_01.jks')
+            storePassword 'b§43.$E!B,#_}XbxP#N6'
+            keyAlias 'key01'
+            keyPassword '@3!9n~)mR6eN{q2qNADG'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
 
@@ -20,6 +28,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.buildConfig
     }
 
     buildTypes {
