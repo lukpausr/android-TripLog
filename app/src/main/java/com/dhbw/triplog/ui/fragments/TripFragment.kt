@@ -294,6 +294,10 @@ class TripFragment : Fragment(R.layout.fragment_trip), EasyPermissions.Permissio
                 .setNeutralButton("Fortsetzen", null)
                 .setNegativeButton("Verwerfen") { _, _ ->
                     stopTracking()
+                    val sensorFile = File("${requireContext().filesDir}/temp_sensor.csv")
+                    val gpsFile = File("${requireContext().filesDir}/temp_gps.csv")
+                    sensorFile.delete()
+                    gpsFile.delete()
                 }
         val dialog = alertDialogBuilder.create()
         dialog.show()
